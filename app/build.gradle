@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+apply from: "$project.rootDir/keystore/secret.gradle"
+apply from: "$project.rootDir/tools/version.gradle"
 
 android {
     compileSdkVersion 25
@@ -7,26 +10,97 @@ android {
         applicationId "ru.vandrikeev.android.phrasebook"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        buildConfigField 'String', 'API_KEY', "\"${apiKey}\""
     }
-    buildTypes {
+
+    signingConfigs {
+        debug {
+            keyAlias debugAlias
+            keyPassword debugAliasPass
+            storePassword debugKeystorePass
+            storeFile file(debugKeystore)
+        }
         release {
+            keyAlias alias
+            keyPassword aliasPass
+            storePassword keystorePass
+            storeFile file(keystore)
+        }
+    }
+
+    buildTypes {
+        debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), "../tools/proguard-rules.pro"
+            signingConfig signingConfigs.release
+        }
+    }
+
+    productFlavors {
+        dev {
+            signingConfig signingConfigs.debug
+            versionCode gitVersionCodeTime
+            versionName gitVersionName
+            applicationIdSuffix '.dev'
+        }
+        prod {
+            signingConfig signingConfigs.release
+            versionCode gitVersionCode
+            versionName gitVersionName
         }
     }
 }
 
+ext {
+    support_version = '25.3.0'
+    constraint_layout_version = '1.0.2'
+    retrofit_version = '2.2.0'
+    rx_java_version = '2.0.7'
+    rx_android_version = '2.0.1'
+    dagger_version = '2.9'
+    moxy_version = '1.4.6'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    // tests
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.google.code.findbugs'
     })
-    compile 'com.android.support:appcompat-v7:25.3.0'
-    compile 'com.android.support:design:25.3.0'
-    compile 'com.android.support:support-vector-drawable:25.3.0'
     testCompile 'junit:junit:4.12'
+    // support
+    compile "com.android.support:appcompat-v7:$support_version"
+    compile "com.android.support:recyclerview-v7:$support_version"
+    compile "com.android.support:design:$support_version"
+    compile "com.android.support:support-vector-drawable:$support_version"
+    compile "com.android.support.constraint:constraint-layout:$constraint_layout_version"
+    // retrofit2
+    compile "com.squareup.retrofit2:retrofit:$retrofit_version"
+    compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    // gson
+    compile 'com.google.code.gson:gson:2.8.0'
+    // rx
+    compile "io.reactivex.rxjava2:rxjava:$rx_java_version"
+    compile "io.reactivex.rxjava2:rxandroid:$rx_android_version"
+    // licenses
+    compile 'de.psdev.licensesdialog:licensesdialog:1.8.1'
+    // dagger2
+    compile "com.google.dagger:dagger:$dagger_version"
+    apt "com.google.dagger:dagger-compiler:$dagger_version"
+    // jsr
+    provided 'javax.annotation:jsr250-api:1.0'
+    // moxy
+    compile "com.arello-mobile:moxy:$moxy_version"
+    compile "com.arello-mobile:moxy-app-compat:$moxy_version"
+    apt "com.arello-mobile:moxy-compiler:$moxy_version"
+    // animation
+    compile 'com.andkulikov:transitionseverywhere:1.6.9'
 }
