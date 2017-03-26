@@ -1,6 +1,31 @@
 <resources>
     <string name="app_name">Phrasebook</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+
+    <!-- Navigation -->
+    <string name="navigation_title_translation">Translation</string>
+    <string name="navigation_title_history">History</string>
+    <string name="navigation_title_favorites">Favorites</string>
+
+    <!-- Translation -->
+    <string name="action_translate">Translate</string>
+    <string name="spinner_autodetect">Autodetect</string>
+    <string name="spinner_prompt_from">Select language from</string>
+    <string name="spinner_prompt_to">Select language to</string>
+    <string name="translation_from_default">auto</string>
+    <string name="translation_to_default">ru</string>
+
+    <!-- Reference -->
+    <string name="yandex_reference" formatted="true">Powered by <a href='http://translate.yandex.com/'>Yandex.Translate</a></string>
+    <string name="translation_label">Translation:</string>
+    <string name="input_text_hint">Tap to enter text</string>
+
+    <!-- Errors -->
+    <string name="error_network">No internet connection</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_api_invalid_key">Invalid API key</string>
+    <string name="error_api_blocked_key">Blocked API key</string>
+    <string name="error_api_daily_limit">Exceeded the daily limit on the amount of translated text</string>
+    <string name="error_api_text_size">Exceeded the maximum text size</string>
+    <string name="error_api_cannot_translate">The text cannot be translated</string>
+    <string name="error_api_not_supported">The specified translation direction is not supported</string>
 </resources>
