@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:prompt="@string/spinner_prompt_from"
+        android:prompt="@string/spinner_prompt"
         android:spinnerMode="dialog"/>
 
     <RelativeLayout
@@ -41,7 +41,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:prompt="@string/spinner_prompt_to"
+        android:prompt="@string/spinner_prompt"
         android:spinnerMode="dialog"/>
 
 </LinearLayout>

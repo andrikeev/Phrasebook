@@ -9,10 +9,12 @@
     <!-- Translation -->
     <string name="action_translate">Translate</string>
     <string name="spinner_autodetect">Autodetect</string>
-    <string name="spinner_prompt_from">Select language from</string>
-    <string name="spinner_prompt_to">Select language to</string>
+    <string name="spinner_prompt">Select language</string>
     <string name="translation_from_default">auto</string>
     <string name="translation_to_default">ru</string>
+
+    <!-- History -->
+    <string name="action_clear">Clear</string>
 
     <!-- Reference -->
     <string name="yandex_reference" formatted="true">Powered by <a href='http://translate.yandex.com/'>Yandex.Translate</a></string>

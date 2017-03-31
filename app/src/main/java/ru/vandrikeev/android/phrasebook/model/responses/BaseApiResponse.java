@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Base API response model.
  */
+@SuppressWarnings("FieldCanBeLocal")
 public abstract class BaseApiResponse {
 
     /**
@@ -19,6 +20,7 @@ public abstract class BaseApiResponse {
      * <li>413 - Exceeded the maximum text size</li>
      * <li>422 - The text cannot be translated</li>
      * <li>501 - The specified translation direction is not supported</li>
+     * <li>502 - Invalid parameter</li>
      * </ul>
      */
     @SerializedName("code")

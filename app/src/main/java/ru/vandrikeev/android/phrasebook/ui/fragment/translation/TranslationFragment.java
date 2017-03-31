@@ -23,7 +23,7 @@ import com.transitionseverywhere.TransitionManager;
 
 import ru.vandrikeev.android.phrasebook.App;
 import ru.vandrikeev.android.phrasebook.R;
-import ru.vandrikeev.android.phrasebook.model.Language;
+import ru.vandrikeev.android.phrasebook.model.languages.Language;
 import ru.vandrikeev.android.phrasebook.model.network.ErrorUtils;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.translation.TranslationPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.translation.TranslationView;
@@ -42,6 +42,7 @@ public class TranslationFragment
 
     // region Fields
     @InjectPresenter
+    @NonNull
     TranslationPresenter presenter;
     @NonNull
     private LanguageSelectionWidget languageSelectionWidget;
@@ -55,6 +56,7 @@ public class TranslationFragment
     private TextView translationTextView;
     @NonNull
     private ImageButton favoriteButton;
+    private boolean isFavorite = false;
 
     // endregion
 
@@ -86,10 +88,10 @@ public class TranslationFragment
                         performTranslation();
                     }
                 });
-                handler.postDelayed(workRunnable.get(), 500);
+                handler.postDelayed(workRunnable.get(), 700);
 
                 Log.d(TAG, String.format("Text changed. New string '%s'. " +
-                        "Waiting 0.5 seconds to request translation", s));
+                        "Waiting 0.7 seconds to request translation", s));
             }
 
             @Override
@@ -109,7 +111,7 @@ public class TranslationFragment
                 new LanguageSelectionWidget.OnLanguageFromSelectedListener() {
                     @Override
                     public void onSelected(@NonNull Language language) {
-                        if (language != Language.auto) {
+                        if (language.isAutodetect()) {
                             detectedLanguageLabel.setVisibility(View.INVISIBLE);
                         }
                     }
@@ -129,14 +131,7 @@ public class TranslationFragment
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                favoriteButton.setImageResource(R.drawable.ic_favorite_on);
-                final Language from = languageSelectionWidget.getLanguageFrom() == Language.auto
-                        ? Language.valueOf(detectedLanguageLabel.getText().toString())
-                        : languageSelectionWidget.getLanguageFrom();
-                final Language to = languageSelectionWidget.getLanguageTo();
-                final String text = inputTextEdit.getText().toString();
-                final String translation = translationTextView.getText().toString();
-                presenter.saveToFavorites(from, to, text, translation);
+                presenter.setFavorite(!isFavorite);
             }
         });
     }
@@ -160,7 +155,6 @@ public class TranslationFragment
     public void showLoading() {
         TransitionManager.beginDelayedTransition((ViewGroup) getView());
         loadingView.setVisibility(View.VISIBLE);
-        favoriteButton.setImageResource(R.drawable.ic_favorite_off);
         Log.d(TAG, "Show loading translation");
     }
 
@@ -172,9 +166,18 @@ public class TranslationFragment
     }
 
     @Override
-    public void setDetectedLanguage(@NonNull Language language) {
-        detectedLanguageLabel.setText(language.name().toUpperCase());
+    public void setDetectedLanguage(@NonNull String language) {
+        TransitionManager.beginDelayedTransition((ViewGroup) getView());
+        detectedLanguageLabel.setText(language);
         Log.d(TAG, String.format("Language detected '%s'", language));
+    }
+
+    @Override
+    public void setFavorite(boolean favorite) {
+        TransitionManager.beginDelayedTransition((ViewGroup) getView());
+        favoriteButton.setImageResource(favorite ? R.drawable.ic_favorite_on : R.drawable.ic_favorite_off);
+        isFavorite = favorite;
+        Log.d(TAG, String.format("Translation favorite state '%s'", favorite));
     }
 
     @Override
@@ -185,7 +188,7 @@ public class TranslationFragment
     }
 
     @Override
-    public void showError(@Nullable Throwable e) {
+    public void showError(@NonNull Throwable e) {
         TransitionManager.beginDelayedTransition((ViewGroup) getView());
         loadingView.setVisibility(View.INVISIBLE);
         final String message = getString(ErrorUtils.getErrorMessage(e));

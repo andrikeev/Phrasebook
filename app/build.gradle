@@ -58,7 +58,7 @@ android {
 }
 
 ext {
-    support_version = '25.3.0'
+    support_version = '25.3.1'
     constraint_layout_version = '1.0.2'
     retrofit_version = '2.2.0'
     rx_java_version = '2.0.7'
@@ -104,4 +104,8 @@ dependencies {
     apt "com.arello-mobile:moxy-compiler:$moxy_version"
     // animation
     compile 'com.andkulikov:transitionseverywhere:1.6.9'
+    // requery
+    compile 'io.requery:requery:1.2.1'
+    compile 'io.requery:requery-android:1.2.1'
+    apt 'io.requery:requery-processor:1.2.1'
 }

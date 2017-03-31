@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import ru.vandrikeev.android.phrasebook.model.Language;
-
 /**
  * Application settings.
  */
@@ -30,26 +28,24 @@ public class Settings {
     }
 
     @NonNull
-    public Language getLanguageFrom() {
-        String name = preferences.getString(LANGUAGE_FROM_KEY, context.getString(R.string.translation_from_default));
-        return Language.valueOf(name);
+    public String getLanguageFrom() {
+        return preferences.getString(LANGUAGE_FROM_KEY, context.getString(R.string.translation_from_default));
     }
 
-    public void setLanguageFrom(Language language) {
+    public void setLanguageFrom(String language) {
         preferences.edit()
-                .putString(LANGUAGE_FROM_KEY, language.name())
+                .putString(LANGUAGE_FROM_KEY, language)
                 .apply();
     }
 
     @NonNull
-    public Language getLanguageTo() {
-        String name = preferences.getString(LANGUAGE_TO_KEY, context.getString(R.string.translation_to_default));
-        return Language.valueOf(name);
+    public String getLanguageTo() {
+        return preferences.getString(LANGUAGE_TO_KEY, context.getString(R.string.translation_to_default));
     }
 
-    public void setLanguageTo(Language language) {
+    public void setLanguageTo(String language) {
         preferences.edit()
-                .putString(LANGUAGE_TO_KEY, language.name())
+                .putString(LANGUAGE_TO_KEY, language)
                 .apply();
     }
 }

@@ -4,7 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import ru.vandrikeev.android.phrasebook.App;
-import ru.vandrikeev.android.phrasebook.Settings;
+import ru.vandrikeev.android.phrasebook.presentation.presenter.history.HistoryPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.translation.LanguageSelectionPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.translation.TranslationPresenter;
 
@@ -17,13 +17,11 @@ public interface AppComponent {
 
     void inject(App application);
 
-    Settings getSettings();
-
     LanguageSelectionPresenter getLanguageSelectionPresenter();
 
     TranslationPresenter getTranslationPresenter();
 
-    //HistoryPresenter getHistoryPresenter();
+    HistoryPresenter getHistoryPresenter();
 
     //FavoritesPresenter getFavoritesPresenter();
 }

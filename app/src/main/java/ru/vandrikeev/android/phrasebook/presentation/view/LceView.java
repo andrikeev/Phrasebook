@@ -1,7 +1,6 @@
 package ru.vandrikeev.android.phrasebook.presentation.view;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
@@ -34,5 +33,5 @@ public interface LceView<M> extends BaseView {
      *
      * @param e error cause
      */
-    void showError(@Nullable Throwable e);
+    void showError(@NonNull Throwable e);
 }

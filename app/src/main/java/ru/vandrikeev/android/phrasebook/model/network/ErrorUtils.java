@@ -15,10 +15,10 @@ import ru.vandrikeev.android.phrasebook.R;
 public class ErrorUtils {
 
     /**
-     * The resource identifier of the localized message associated with this error
+     * The resource identifier of the localized message associated with given error.
      *
      * @param e error
-     * @return resource id of message
+     * @return resource id of string message
      */
     public static int getErrorMessage(@Nullable Throwable e) {
         if (e instanceof YandexTranslateException) {

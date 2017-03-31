@@ -10,13 +10,11 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.vandrikeev.android.phrasebook.model.Language;
-
 /**
  * API response for translation request.
  */
 @SuppressWarnings({"unused", "MismatchedQueryAndUpdateOfCollection"})
-public final class Translation extends BaseApiResponse {
+public final class TranslationResponse extends BaseApiResponse {
 
     /**
      * List of translations for strings passed in request.
@@ -26,36 +24,35 @@ public final class Translation extends BaseApiResponse {
     private List<String> text = new ArrayList<>();
 
     /**
-     * Translation direction.
+     * Translation direction in 'from-to' format.
      */
     @Nullable
     @SerializedName("lang")
     private String direction;
 
+    private TranslationResponse() {
+    }
+
     @NonNull
     public String getText() {
-        if (text.size() > 1) {
-            final StringBuilder sb = new StringBuilder();
-            for (String s : text) {
-                sb.append(s);
+        final StringBuilder sb = new StringBuilder();
+        for (String s : text) {
+            sb.append(s);
+            if (text.size() > 0) {
                 sb.append('\n');
             }
-            return sb.toString();
-        } else if (text.size() > 0) {
-            return text.get(0);
-        } else {
-            return "";
         }
+        return sb.toString();
     }
 
     @Nullable
-    public Pair<Language, Language> getTranslationDirection() {
+    public Pair<String, String> getTranslationDirection() {
         if (TextUtils.isEmpty(direction)) {
             return null;
         } else {
             int idx = direction.indexOf('-');
-            final Language from = Language.valueOf(direction.substring(0, idx));
-            final Language to = Language.valueOf(direction.substring(idx + 1, direction.length()));
+            final String from = direction.substring(0, idx).toUpperCase();
+            final String to = direction.substring(idx + 1, direction.length()).toUpperCase();
             return new Pair<>(from, to);
         }
     }

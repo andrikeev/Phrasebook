@@ -7,7 +7,9 @@ import com.arellomobile.mvp.InjectViewState;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import ru.vandrikeev.android.phrasebook.model.Language;
+import ru.vandrikeev.android.phrasebook.Settings;
+import ru.vandrikeev.android.phrasebook.model.languages.Language;
+import ru.vandrikeev.android.phrasebook.model.languages.LanguageRepository;
 import ru.vandrikeev.android.phrasebook.model.network.YandexTranslateException;
 import ru.vandrikeev.android.phrasebook.model.network.YandexTranslateService;
 import ru.vandrikeev.android.phrasebook.model.responses.SupportedLanguages;
@@ -23,9 +25,19 @@ public class LanguageSelectionPresenter extends RxPresenter<LanguageSelectionVie
     @NonNull
     private YandexTranslateService service;
 
+    @NonNull
+    private LanguageRepository languageRepository;
+
+    @NonNull
+    private Settings settings;
+
     @Inject
-    public LanguageSelectionPresenter(@NonNull YandexTranslateService service) {
+    public LanguageSelectionPresenter(@NonNull YandexTranslateService service,
+                                      @NonNull LanguageRepository languageRepository,
+                                      @NonNull Settings settings) {
         this.service = service;
+        this.languageRepository = languageRepository;
+        this.settings = settings;
     }
 
     /**
@@ -39,14 +51,15 @@ public class LanguageSelectionPresenter extends RxPresenter<LanguageSelectionVie
         dispose();
 
         getViewState().showLoading();
-        if (language == Language.auto) {
-            getViewState().setModel(Language.getValues());
+        if (language.isAutodetect()) {
+            getViewState().setModel(languageRepository.getLanguages());
             getViewState().showContent();
         } else {
             disposable = service.getSupportedLanguages(language)
                     .subscribe(
                             new Consumer<SupportedLanguages>() {
                                 @Override
+                                @SuppressWarnings("NullableProblems")
                                 public void accept(@NonNull SupportedLanguages supportedLanguages) throws Exception {
                                     switch (supportedLanguages.getCode()) {
                                         case 200:
@@ -54,17 +67,33 @@ public class LanguageSelectionPresenter extends RxPresenter<LanguageSelectionVie
                                             getViewState().showContent();
                                             break;
                                         default:
-                                            getViewState().showError(new YandexTranslateException(supportedLanguages.getCode(), supportedLanguages.getMessage()));
+                                            getViewState().showError(new YandexTranslateException(
+                                                    supportedLanguages.getCode(), supportedLanguages.getMessage()));
                                             break;
                                     }
                                 }
                             },
                             new Consumer<Throwable>() {
                                 @Override
-                                public void accept(@NonNull Throwable throwable) throws Exception {
-                                    getViewState().showError(throwable);
+                                @SuppressWarnings("NullableProblems")
+                                public void accept(@NonNull Throwable e) throws Exception {
+                                    getViewState().showError(e);
                                 }
                             });
         }
+    }
+
+    /**
+     * Set up view on first attach.
+     */
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        Language languageFrom = languageRepository.getLanguageByCode(settings.getLanguageFrom());
+        if (languageFrom == null) {
+            languageFrom = languageRepository.getAutodetect();
+        }
+        Language languageTo = languageRepository.getLanguageByCode(settings.getLanguageTo());
+        getViewState().setUpSpinners(languageRepository.getLanguagesWithAutodetect(), languageFrom, languageTo);
     }
 }
