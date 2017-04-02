@@ -6,11 +6,10 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import ru.vandrikeev.android.phrasebook.R;
+import ru.vandrikeev.android.phrasebook.ui.fragment.favorites.FavoritesFragment;
 import ru.vandrikeev.android.phrasebook.ui.fragment.history.HistoryFragment;
 import ru.vandrikeev.android.phrasebook.ui.fragment.translation.TranslationFragment;
 
@@ -19,7 +18,7 @@ import ru.vandrikeev.android.phrasebook.ui.fragment.translation.TranslationFragm
  * <ul>
  * <li>{@link TranslationFragment} with translation function</li>
  * <li>{@link HistoryFragment} with translation history</li>
- * <li> FavoritesFragment with favorites translations</li>
+ * <li> {@link FavoritesFragment} with favorites translations</li>
  * </ul>
  * <p>
  * From Google MD guidelines
@@ -45,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             final FragmentManager fragmentManager = getSupportFragmentManager();
+            final Fragment fragment = fragmentManager.findFragmentById(R.id.content);
             switch (item.getItemId()) {
                 case R.id.navigation_translation:
                     // Just replace current fragment with new
@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
 
                 case R.id.navigation_history:
-                    final Fragment fragment = fragmentManager.findFragmentById(R.id.content);
                     if (fragment instanceof HistoryFragment) {
                         // If current screen already contains history fragment just scroll to the top of list
                         final HistoryFragment historyFragment = (HistoryFragment) fragment;
@@ -66,9 +65,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     return true;
                 case R.id.navigation_favorites:
-                    //TODO add favorites fragment
-                    Toast.makeText(MainActivity.this, "Favorites tab selected", Toast.LENGTH_SHORT).show();
-                    /*final Fragment fragment = fragmentManager.findFragmentById(R.id.content);
                     if (fragment instanceof FavoritesFragment) {
                         // If current screen already contains favorites fragment just scroll to the top of list
                         final FavoritesFragment favoritesFragment = (FavoritesFragment) fragment;
@@ -77,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                         fragmentManager.beginTransaction()
                                 .replace(R.id.content, new FavoritesFragment())
                                 .commit();
-                    }*/
+                    }
                     return true;
             }
             return false;
@@ -89,9 +85,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Toolbar toolbar = (Toolbar) findViewById(0);
-        setSupportActionBar(toolbar);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);

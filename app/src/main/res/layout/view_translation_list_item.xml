@@ -5,7 +5,7 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="horizontal"
-              android:padding="8dp">
+              android:padding="16dp">
 
     <ImageView
         android:id="@+id/icon"
@@ -18,21 +18,23 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp">
 
         <TextView
             android:id="@+id/text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             tools:text="Hello World"/>
 
         <TextView
             android:id="@+id/translation"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             tools:text="Привет, Мир"/>
 
     </LinearLayout>
@@ -40,9 +42,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/languageFrom"
@@ -54,6 +55,7 @@
             android:id="@+id/languageTo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             tools:text="RU"/>
 
     </LinearLayout>

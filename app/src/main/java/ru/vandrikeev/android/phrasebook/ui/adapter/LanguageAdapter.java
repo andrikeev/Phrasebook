@@ -15,7 +15,7 @@ import ru.vandrikeev.android.phrasebook.R;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
 
 /**
- * Adapter for any list of {@link Language}.
+ * Adapter for list of {@link Language}.
  */
 public class LanguageAdapter extends BaseAdapter {
 
@@ -41,20 +41,22 @@ public class LanguageAdapter extends BaseAdapter {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, ViewGroup parent) {
-        TextView textView = new TextView(parent.getContext());
-        textView.setText(items.get(position).getName());
-        return textView;
+        return getView(position, convertView, parent, R.layout.view_spinner_selected_item);
     }
 
     @Override
     public View getDropDownView(int position, @Nullable View convertView, ViewGroup parent) {
+        return getView(position, convertView, parent, R.layout.view_spinner_dropdown_item);
+    }
+
+    private View getView(int position, @Nullable View convertView, ViewGroup parent, int resId) {
         final Language language = getItem(position);
         final ViewHolder viewHolder;
 
         if (convertView == null) {
             viewHolder = new ViewHolder();
             final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            convertView = inflater.inflate(R.layout.view_spinner_dropdown_item, parent, false);
+            convertView = inflater.inflate(resId, parent, false);
             viewHolder.name = (TextView) convertView.findViewById(R.id.text);
             convertView.setTag(viewHolder);
         } else {
@@ -70,15 +72,13 @@ public class LanguageAdapter extends BaseAdapter {
         return items.indexOf(language);
     }
 
-    public void clear() {
-        items.clear();
-    }
-
     public void addAll(@NonNull List<Language> languages) {
+        items.clear();
         items.addAll(languages);
+        notifyDataSetChanged();
     }
 
     private static class ViewHolder {
-        TextView name;
+        private TextView name;
     }
 }

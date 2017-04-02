@@ -13,6 +13,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import ru.vandrikeev.android.phrasebook.R;
+
 @Singleton
 public class LanguageRepository {
 
@@ -30,14 +32,15 @@ public class LanguageRepository {
         this.context = context;
         this.languages = new ArrayList<>();
         this.languagesByCode = new HashMap<>();
-        final String[] codes = context.getResources().getStringArray(0);
-        final String[] names = context.getResources().getStringArray(0);
+        final String[] codes = context.getResources().getStringArray(R.array.language_codes);
+        final String[] names = context.getResources().getStringArray(R.array.language_values);
         for (int i = 0; i < codes.length; i++) {
             final Language language = new Language(codes[i], names[i]);
             languages.add(language);
             languagesByCode.put(language.getCode(), language);
         }
         Collections.sort(languages, Language.COMPARATOR);
+        languages.add(0, getAutodetect());
     }
 
     @NonNull
@@ -45,16 +48,22 @@ public class LanguageRepository {
         return languages;
     }
 
-    @NonNull
-    public List<Language> getLanguagesWithAutodetect() {
-        final List<Language> result = new ArrayList<>(languages);
-        result.add(getAutodetect());
-        return result;
-    }
-
     @Nullable
     public Language getLanguageByCode(@NonNull String code) {
         return languagesByCode.get(code);
+    }
+
+    @NonNull
+    public List<Language> getLocalizedLanguages(@NonNull List<Language> languages) {
+        final List<Language> result = new ArrayList<>(languages.size());
+        for (Language language : languages) {
+            if (getLanguageByCode(language.getCode()) != null) {
+                result.add(getLanguageByCode(language.getCode()));
+            } else {
+                result.add(language);
+            }
+        }
+        return result;
     }
 
     @NonNull

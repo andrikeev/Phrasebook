@@ -8,7 +8,6 @@ import com.arellomobile.mvp.InjectViewState;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import ru.vandrikeev.android.phrasebook.Settings;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
 import ru.vandrikeev.android.phrasebook.model.network.YandexTranslateException;
 import ru.vandrikeev.android.phrasebook.model.network.YandexTranslateService;
@@ -30,18 +29,13 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
     @NonNull
     private TranslationRepository translationRepository;
 
-    @NonNull
-    private Settings settings;
-
     private long currentTranslationId = -1;
 
     @Inject
     public TranslationPresenter(@NonNull YandexTranslateService service,
-                                @NonNull TranslationRepository translationRepository,
-                                @NonNull Settings settings) {
+                                @NonNull TranslationRepository translationRepository) {
         this.service = service;
         this.translationRepository = translationRepository;
-        this.settings = settings;
     }
 
     /**
@@ -52,11 +46,12 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
      * @param to   any {@link Language} except {@link Language#AUTODETECT}
      */
     public void translate(@NonNull final String text,
-                          @NonNull Language from,
+                          @NonNull final Language from,
                           @NonNull Language to) {
         dispose();
         getViewState().showLoading();
         getViewState().setFavorite(false);
+
         disposable = service.translate(from, to, text)
                 .subscribe(
                         new Consumer<TranslationResponse>() {
@@ -66,10 +61,12 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
                                 switch (translation.getCode()) {
                                     case 200:
                                         getViewState().setModel(translation.getText());
-                                        Pair<String, String> translationDirection =
+                                        final Pair<String, String> translationDirection =
                                                 translation.getTranslationDirection();
                                         if (translationDirection != null) {
-                                            getViewState().setDetectedLanguage(translationDirection.first);
+                                            if (from.isAutodetect()) {
+                                                getViewState().setDetectedLanguage(translationDirection.first);
+                                            }
                                             saveToHistory(translationDirection.first,
                                                     translationDirection.second,
                                                     text,
@@ -105,8 +102,6 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
                                @NonNull String to,
                                @NonNull String text,
                                @NonNull String translation) {
-        settings.setLanguageFrom(from);
-        settings.setLanguageTo(from);
         disposable = translationRepository.saveToRecents(from, to, text, translation)
                 .subscribe(
                         new Consumer<Translation>() {

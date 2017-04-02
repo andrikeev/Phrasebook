@@ -3,6 +3,8 @@ package ru.vandrikeev.android.phrasebook.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,6 +54,10 @@ public abstract class TranslationListFragment
         return R.layout.fragment_translation_list;
     }
 
+    protected abstract int getEmptyLabelRes();
+
+    protected abstract int getEmptyDrawableRes();
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -71,20 +77,27 @@ public abstract class TranslationListFragment
         if (errorView == null) {
             throw new IllegalStateException("Error view is null");
         }
+        errorView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_error, 0, 0);
 
         emptyView = (TextView) view.findViewById(R.id.emptyView);
         if (emptyView == null) {
             throw new IllegalStateException("Empty view is null");
         }
+        emptyView.setText(getEmptyLabelRes());
+        emptyView.setCompoundDrawablesWithIntrinsicBounds(0, getEmptyDrawableRes(), 0, 0);
 
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         adapter = new TranslationAdapter();
+        contentView.setHasFixedSize(true);
+        contentView.setLayoutManager(layoutManager);
+        contentView.addItemDecoration(new DividerItemDecoration(getContext(), layoutManager.getOrientation()));
         contentView.setAdapter(adapter);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.navigation, menu);
+        inflater.inflate(R.menu.history_menu, menu);
     }
 
     @Override

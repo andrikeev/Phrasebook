@@ -1,8 +1,11 @@
 package ru.vandrikeev.android.phrasebook.presentation.presenter.translation;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.arellomobile.mvp.InjectViewState;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -63,7 +66,10 @@ public class LanguageSelectionPresenter extends RxPresenter<LanguageSelectionVie
                                 public void accept(@NonNull SupportedLanguages supportedLanguages) throws Exception {
                                     switch (supportedLanguages.getCode()) {
                                         case 200:
-                                            getViewState().setModel(supportedLanguages.getSupportedLanguages());
+                                            final List<Language> localizedLanguages =
+                                                    languageRepository.getLocalizedLanguages(
+                                                            supportedLanguages.getSupportedLanguages());
+                                            getViewState().setModel(localizedLanguages);
                                             getViewState().showContent();
                                             break;
                                         default:
@@ -83,6 +89,15 @@ public class LanguageSelectionPresenter extends RxPresenter<LanguageSelectionVie
         }
     }
 
+    public void saveLastSelectedLanguages(@Nullable Language from, @Nullable Language to) {
+        if (from != null) {
+            settings.setLanguageFrom(from.getCode());
+        }
+        if (to != null) {
+            settings.setLanguageTo(to.getCode());
+        }
+    }
+
     /**
      * Set up view on first attach.
      */
@@ -93,7 +108,7 @@ public class LanguageSelectionPresenter extends RxPresenter<LanguageSelectionVie
         if (languageFrom == null) {
             languageFrom = languageRepository.getAutodetect();
         }
-        Language languageTo = languageRepository.getLanguageByCode(settings.getLanguageTo());
-        getViewState().setUpSpinners(languageRepository.getLanguagesWithAutodetect(), languageFrom, languageTo);
+        final Language languageTo = languageRepository.getLanguageByCode(settings.getLanguageTo());
+        getViewState().setUpSpinners(languageRepository.getLanguages(), languageFrom, languageTo);
     }
 }

@@ -41,22 +41,30 @@ public class TranslationFragment
     private static final String TAG = TranslationFragment.class.getSimpleName();
 
     // region Fields
+
+    @NonNull
+    private LanguageSelectionWidget languageSelectionWidget;
+
+    @NonNull
+    private EditText inputTextEdit;
+
+    @NonNull
+    private TextView detectedLanguageLabel;
+
+    @NonNull
+    private ProgressBar loadingView;
+
+    @NonNull
+    private TextView translationTextView;
+
+    @NonNull
+    private ImageButton favoriteButton;
+
+    private boolean isFavorite = false;
+
     @InjectPresenter
     @NonNull
     TranslationPresenter presenter;
-    @NonNull
-    private LanguageSelectionWidget languageSelectionWidget;
-    @NonNull
-    private EditText inputTextEdit;
-    @NonNull
-    private TextView detectedLanguageLabel;
-    @NonNull
-    private ProgressBar loadingView;
-    @NonNull
-    private TextView translationTextView;
-    @NonNull
-    private ImageButton favoriteButton;
-    private boolean isFavorite = false;
 
     // endregion
 
@@ -88,10 +96,10 @@ public class TranslationFragment
                         performTranslation();
                     }
                 });
-                handler.postDelayed(workRunnable.get(), 700);
+                handler.postDelayed(workRunnable.get(), 1000);
 
                 Log.d(TAG, String.format("Text changed. New string '%s'. " +
-                        "Waiting 0.7 seconds to request translation", s));
+                        "Waiting one seconds before request translation", s));
             }
 
             @Override
@@ -111,9 +119,7 @@ public class TranslationFragment
                 new LanguageSelectionWidget.OnLanguageFromSelectedListener() {
                     @Override
                     public void onSelected(@NonNull Language language) {
-                        if (language.isAutodetect()) {
-                            detectedLanguageLabel.setVisibility(View.INVISIBLE);
-                        }
+                        detectedLanguageLabel.setText("");
                     }
                 });
         languageSelectionWidget.setOnLanguageToSelectedListener(
@@ -122,8 +128,7 @@ public class TranslationFragment
                     public void onSelected(@NonNull Language language) {
                         performTranslation();
                     }
-                }
-        );
+                });
 
         detectedLanguageLabel = (TextView) view.findViewById(R.id.detectedLanguageLabel);
 
@@ -138,6 +143,8 @@ public class TranslationFragment
 
     private void performTranslation() {
         Log.d(TAG, "Check if translation needed");
+        favoriteButton.setEnabled(false);
+        detectedLanguageLabel.setText("");
         final String text = inputTextEdit.getText().toString();
         if (!TextUtils.isEmpty(text)) {
             final Language from = languageSelectionWidget.getLanguageFrom();
@@ -162,6 +169,7 @@ public class TranslationFragment
     public void setModel(@NonNull String translation) {
         TransitionManager.beginDelayedTransition((ViewGroup) getView());
         translationTextView.setText(translation);
+        favoriteButton.setEnabled(true);
         Log.d(TAG, String.format("Translated '%s'", translation));
     }
 
@@ -182,8 +190,8 @@ public class TranslationFragment
 
     @Override
     public void showContent() {
-        loadingView.setVisibility(View.INVISIBLE);
         TransitionManager.beginDelayedTransition((ViewGroup) getView());
+        loadingView.setVisibility(View.INVISIBLE);
         Log.d(TAG, "Show translated text");
     }
 

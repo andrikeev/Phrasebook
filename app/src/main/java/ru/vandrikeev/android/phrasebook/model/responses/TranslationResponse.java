@@ -38,7 +38,7 @@ public final class TranslationResponse extends BaseApiResponse {
         final StringBuilder sb = new StringBuilder();
         for (String s : text) {
             sb.append(s);
-            if (text.size() > 0) {
+            if (text.size() > 1) {
                 sb.append('\n');
             }
         }

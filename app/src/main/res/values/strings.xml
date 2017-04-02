@@ -15,6 +15,8 @@
 
     <!-- History -->
     <string name="action_clear">Clear</string>
+    <string name="empty_history">Here there will be \nrecent translations</string>
+    <string name="empty_favorites">Here there will be \nfavorites translations</string>
 
     <!-- Reference -->
     <string name="yandex_reference" formatted="true">Powered by <a href='http://translate.yandex.com/'>Yandex.Translate</a></string>

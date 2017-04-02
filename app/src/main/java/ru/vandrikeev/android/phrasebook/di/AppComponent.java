@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import ru.vandrikeev.android.phrasebook.App;
+import ru.vandrikeev.android.phrasebook.presentation.presenter.favorites.FavoritesPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.history.HistoryPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.translation.LanguageSelectionPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.translation.TranslationPresenter;
@@ -23,5 +24,5 @@ public interface AppComponent {
 
     HistoryPresenter getHistoryPresenter();
 
-    //FavoritesPresenter getFavoritesPresenter();
+    FavoritesPresenter getFavoritesPresenter();
 }

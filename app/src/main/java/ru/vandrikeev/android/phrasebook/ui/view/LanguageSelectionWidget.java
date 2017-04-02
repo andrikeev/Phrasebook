@@ -44,31 +44,46 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
     private static final String TAG = LanguageSelectionWidget.class.getSimpleName();
 
     // region MVP delegates
-    @NonNull
-    @InjectPresenter
-    LanguageSelectionPresenter presenter;
+
     private MvpDelegate parentDelegate;
+
     private MvpDelegate<LanguageSelectionWidget> mvpDelegate;
-    @NonNull
-    private Spinner languageFromSpinner;
-    @NonNull
-    private Spinner languageToSpinner;
 
     // endregion
 
     // region Fields
+
+    @NonNull
+    private Spinner languageFromSpinner;
+
+    @NonNull
+    private Spinner languageToSpinner;
+
     @NonNull
     private ImageButton swapLanguagesButton;
+
     @NonNull
     private ProgressBar loadingView;
+
     @NonNull
     private LanguageAdapter languageFromAdapter;
+
     @NonNull
     private LanguageAdapter languageToAdapter;
+
     @Nullable
     private OnLanguageFromSelectedListener languageFromSelectedListener;
+
     @Nullable
     private OnLanguageToSelectedListener languageToSelectedListener;
+
+    @NonNull
+    @InjectPresenter
+    LanguageSelectionPresenter presenter;
+
+    // endregion
+
+    // region Constructor
 
     public LanguageSelectionWidget(@NonNull Context context) {
         super(context);
@@ -85,10 +100,6 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
         onCreateView(context);
     }
 
-    // endregion
-
-    // region Constructor
-
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public LanguageSelectionWidget(@NonNull Context context,
                                    @Nullable AttributeSet attrs,
@@ -98,6 +109,8 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
         onCreateView(context);
     }
 
+    // endregion
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
@@ -105,11 +118,10 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
         getMvpDelegate().onDetach();
     }
 
-    public LanguageSelectionWidget init(@NonNull MvpDelegate parentDelegate) {
+    public void init(@NonNull MvpDelegate parentDelegate) {
         this.parentDelegate = parentDelegate;
         getMvpDelegate().onCreate();
         getMvpDelegate().onAttach();
-        return this;
     }
 
     @NonNull
@@ -118,13 +130,10 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
             return mvpDelegate;
         }
 
-        //noinspection unchecked
-        mvpDelegate = new MvpDelegate(this);
+        mvpDelegate = new MvpDelegate<>(this);
         mvpDelegate.setParentDelegate(parentDelegate, String.valueOf(getId()));
         return mvpDelegate;
     }
-
-    // endregion
 
     @NonNull
     private AppComponent getDependencyGraph() {
@@ -149,10 +158,11 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
                         position, languageFromSpinner.getSelectedItem()));
                 final Language language = getLanguageFrom();
                 loadSupportedLanguages(language);
-                swapLanguagesButton.setEnabled(language.isAutodetect());
+                swapLanguagesButton.setEnabled(!language.isAutodetect());
                 if (languageFromSelectedListener != null) {
                     languageFromSelectedListener.onSelected(language);
                 }
+                presenter.saveLastSelectedLanguages(getLanguageFrom(), getLanguageTo());
             }
 
             @Override
@@ -172,6 +182,7 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
                 if (languageToSelectedListener != null) {
                     languageToSelectedListener.onSelected(language);
                 }
+                presenter.saveLastSelectedLanguages(getLanguageFrom(), getLanguageTo());
             }
 
             @Override
@@ -240,9 +251,7 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
     public void setModel(@NonNull List<Language> model) {
         final Language oldLanguage = getLanguageTo();
         final boolean isOldLanguageAvailable = model.contains(oldLanguage);
-        languageToAdapter.clear();
         languageToAdapter.addAll(model);
-        languageToAdapter.notifyDataSetChanged();
         languageToSpinner.setSelection(isOldLanguageAvailable ? model.indexOf(oldLanguage) : 0, true);
         if (languageToSelectedListener != null) {
             languageToSelectedListener.onSelected(getLanguageTo());
@@ -255,16 +264,11 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
     public void setUpSpinners(@NonNull List<Language> languages,
                               @NonNull Language languageFromPreference,
                               @Nullable Language languageToPreference) {
-        languageFromAdapter.clear();
-        languageFromAdapter.addAll(languages);
-        languageFromAdapter.notifyDataSetChanged();
-        if (languageFromPreference.isAutodetect()) {
-            languageToAdapter.addAll(languages.subList(1, languages.size()));
-            languageToAdapter.notifyDataSetChanged();
-            if (languageToPreference != null) {
-                languageToSpinner.setSelection(languageToAdapter.getItemPosition(languageToPreference));
-            }
+        languageToAdapter.addAll(languages.subList(1, languages.size()));
+        if (languageToPreference != null) {
+            languageToSpinner.setSelection(languageToAdapter.getItemPosition(languageToPreference));
         }
+        languageFromAdapter.addAll(languages);
         languageFromSpinner.setSelection(languageFromAdapter.getItemPosition(languageFromPreference));
     }
 

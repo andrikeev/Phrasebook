@@ -1,4 +1,4 @@
-package ru.vandrikeev.android.phrasebook.ui.fragment.history;
+package ru.vandrikeev.android.phrasebook.ui.fragment.favorites;
 
 import android.support.annotation.NonNull;
 
@@ -7,32 +7,32 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import ru.vandrikeev.android.phrasebook.App;
 import ru.vandrikeev.android.phrasebook.R;
-import ru.vandrikeev.android.phrasebook.presentation.presenter.history.HistoryPresenter;
+import ru.vandrikeev.android.phrasebook.presentation.presenter.favorites.FavoritesPresenter;
 import ru.vandrikeev.android.phrasebook.ui.fragment.TranslationListFragment;
 
 /**
- * {@link TranslationListFragment} with recent translations.
+ * {@link TranslationListFragment} with favorites translations.
  */
-public class HistoryFragment extends TranslationListFragment {
+public class FavoritesFragment extends TranslationListFragment {
 
     @NonNull
     @InjectPresenter
-    HistoryPresenter presenter;
+    FavoritesPresenter presenter;
 
     @Override
     @ProvidePresenter
-    protected HistoryPresenter providePresenter() {
-        return ((App) getActivity().getApplication()).getDependencyGraph().getHistoryPresenter();
+    protected FavoritesPresenter providePresenter() {
+        return ((App) getActivity().getApplication()).getDependencyGraph().getFavoritesPresenter();
     }
 
     @Override
     protected int getEmptyLabelRes() {
-        return R.string.empty_history;
+        return R.string.empty_favorites;
     }
 
     @Override
     protected int getEmptyDrawableRes() {
-        return R.drawable.ic_history_large;
+        return R.drawable.ic_favorites_large;
     }
 
     @Override

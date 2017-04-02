@@ -14,6 +14,9 @@ import java.util.List;
 import ru.vandrikeev.android.phrasebook.R;
 import ru.vandrikeev.android.phrasebook.model.translations.AbstractTranslation;
 
+/**
+ * Recycler view adapter for list of {@link AbstractTranslation}.
+ */
 public class TranslationAdapter extends RecyclerView.Adapter<TranslationAdapter.TranslationHolder> {
 
     @NonNull
@@ -56,11 +59,11 @@ public class TranslationAdapter extends RecyclerView.Adapter<TranslationAdapter.
     }
 
     class TranslationHolder extends RecyclerView.ViewHolder {
-        ImageView icon;
-        TextView text;
-        TextView translation;
-        TextView languageFrom;
-        TextView languageTo;
+        private ImageView icon;
+        private TextView text;
+        private TextView translation;
+        private TextView languageFrom;
+        private TextView languageTo;
 
 
         TranslationHolder(View view) {

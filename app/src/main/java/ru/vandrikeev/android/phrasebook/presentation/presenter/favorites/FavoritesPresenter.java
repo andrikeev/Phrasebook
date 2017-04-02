@@ -1,4 +1,4 @@
-package ru.vandrikeev.android.phrasebook.presentation.presenter.history;
+package ru.vandrikeev.android.phrasebook.presentation.presenter.favorites;
 
 import android.support.annotation.NonNull;
 
@@ -15,16 +15,16 @@ import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.history.TranslationListView;
 
 /**
- * Presenter for history view.
+ * Presenter for favorites view.
  */
 @InjectViewState
-public class HistoryPresenter extends RxPresenter<TranslationListView> {
+public class FavoritesPresenter extends RxPresenter<TranslationListView> {
 
     @NonNull
     private TranslationRepository repository;
 
     @Inject
-    public HistoryPresenter(@NonNull TranslationRepository repository) {
+    public FavoritesPresenter(@NonNull TranslationRepository repository) {
         this.repository = repository;
     }
 
@@ -33,7 +33,7 @@ public class HistoryPresenter extends RxPresenter<TranslationListView> {
         getViewState().showLoading();
         getViewState().clearContent();
 
-        disposable = repository.getRecents()
+        disposable = repository.getFavorites()
                 .subscribe(
                         new Consumer<List<Translation>>() {
                             @Override
@@ -61,7 +61,7 @@ public class HistoryPresenter extends RxPresenter<TranslationListView> {
         dispose();
         getViewState().showLoading();
 
-        disposable = repository.clearHistory()
+        disposable = repository.clearFavorites()
                 .subscribe(new Consumer<Integer>() {
                     @Override
                     @SuppressWarnings("NullableProblems")

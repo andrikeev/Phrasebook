@@ -12,16 +12,24 @@ import ru.vandrikeev.android.phrasebook.R;
  */
 public class Language {
 
+    private static final String AUTODETECT = "auto";
+
     public static final Comparator<Language> COMPARATOR = new Comparator<Language>() {
         @Override
         public int compare(Language o1, Language o2) {
             return o1.name.compareTo(o2.name);
         }
     };
-    private static final String AUTODETECT = "auto";
+
+    /**
+     * Language code.
+     */
     @NonNull
     private String code;
 
+    /**
+     * Language name.
+     */
     @NonNull
     private String name;
 
@@ -30,6 +38,10 @@ public class Language {
         this.name = name;
     }
 
+    /**
+     * Special language object that represents special case of translation when application should try to automatically
+     * detect language of given text.
+     */
     static Language getAutodetect(Context context) {
         return new Language(AUTODETECT, context.getString(R.string.spinner_autodetect));
     }
@@ -53,7 +65,7 @@ public class Language {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
 
@@ -65,5 +77,10 @@ public class Language {
     @Override
     public int hashCode() {
         return code.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s [%s]", name, code);
     }
 }
