@@ -4,5 +4,25 @@
     <string name="navigation_title_favorites">Избранное</string>
     <string name="navigation_title_history">История</string>
     <string name="navigation_title_translation">Перевод</string>
-    <string name="yandex_reference" formatted="true">Переведено сервисом <a href='http://translate.yandex.ru/'>«Яндекс.Переводчик»</a> </string>
+    <string name="yandex_reference" formatted="true">Переведено сервисом
+        <a href='http://translate.yandex.ru/'>
+            «Яндекс.Переводчик»
+        </a>
+    </string>
+    <string name="action_clear">Очистить</string>
+    <string name="action_translate">Перевести</string>
+    <string name="error_api_blocked_key">Ключ API заблокирован</string>
+    <string name="error_api_cannot_translate">Текст не может быть переведён</string>
+    <string name="error_api_daily_limit">Превышен лимит запросов\\nза день</string>
+    <string name="error_api_invalid_key">Невалидный ключ API</string>
+    <string name="error_api_not_supported">Выбранное направление перевода\\nне поддерживается</string>
+    <string name="error_api_text_size">Превышен максимальный размер\\nтекста</string>
+    <string name="error_network">Проверьте подключение к\\nинтернету</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
+    <string name="input_text_hint">Коснитесь чтобы ввести текст</string>
+    <string name="spinner_autodetect">Определить язык</string>
+    <string name="spinner_prompt">Выберите язык</string>
+    <string name="translation_label">Первод:</string>
+    <string name="empty_favorites">Здесь будут отображаться\\nизбранные переводы</string>
+    <string name="empty_history">Здесь будут отображаться\\nпоследние переводы</string>
 </resources>
