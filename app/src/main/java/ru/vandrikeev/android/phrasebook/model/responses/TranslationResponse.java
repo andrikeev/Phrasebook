@@ -2,9 +2,6 @@ package ru.vandrikeev.android.phrasebook.model.responses;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
-import android.util.Pair;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -46,14 +43,7 @@ public final class TranslationResponse extends BaseApiResponse {
     }
 
     @Nullable
-    public Pair<String, String> getTranslationDirection() {
-        if (TextUtils.isEmpty(direction)) {
-            return null;
-        } else {
-            int idx = direction.indexOf('-');
-            final String from = direction.substring(0, idx).toUpperCase();
-            final String to = direction.substring(idx + 1, direction.length()).toUpperCase();
-            return new Pair<>(from, to);
-        }
+    public String getTranslationDirection() {
+        return direction;
     }
 }

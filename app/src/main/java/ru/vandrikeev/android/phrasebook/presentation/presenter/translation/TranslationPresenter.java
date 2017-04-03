@@ -1,12 +1,7 @@
 package ru.vandrikeev.android.phrasebook.presentation.presenter.translation;
 
 import android.support.annotation.NonNull;
-import android.util.Pair;
-
 import com.arellomobile.mvp.InjectViewState;
-
-import javax.inject.Inject;
-
 import io.reactivex.functions.Consumer;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
 import ru.vandrikeev.android.phrasebook.model.network.YandexTranslateException;
@@ -16,6 +11,8 @@ import ru.vandrikeev.android.phrasebook.model.translations.Translation;
 import ru.vandrikeev.android.phrasebook.model.translations.TranslationRepository;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.translation.TranslationView;
+
+import javax.inject.Inject;
 
 /**
  * Presenter for {@link TranslationView}.
@@ -61,16 +58,18 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
                                 switch (translation.getCode()) {
                                     case 200:
                                         getViewState().setModel(translation.getText());
-                                        final Pair<String, String> translationDirection =
-                                                translation.getTranslationDirection();
-                                        if (translationDirection != null) {
+                                        final String translationDirection = translation.getTranslationDirection();
+                                        if (translationDirection != null && !translationDirection.isEmpty()) {
+                                            int idx = translationDirection.indexOf('-');
+                                            final String fromCode =
+                                                    translationDirection.substring(0, idx).toUpperCase();
+                                            final String toCode = translationDirection.substring(
+                                                    idx + 1, translationDirection.length()).toUpperCase();
+
                                             if (from.isAutodetect()) {
-                                                getViewState().setDetectedLanguage(translationDirection.first);
+                                                getViewState().setDetectedLanguage(fromCode);
                                             }
-                                            saveToHistory(translationDirection.first,
-                                                    translationDirection.second,
-                                                    text,
-                                                    translation.getText());
+                                            saveToHistory(fromCode, toCode, text, translation.getText());
                                         }
                                         break;
                                     default:

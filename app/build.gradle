@@ -55,6 +55,12 @@ android {
             versionName gitVersionName
         }
     }
+
+    sourceSets {
+        test {
+            resources.srcDirs += ['src/test/res']
+        }
+    }
 }
 
 ext {
@@ -75,6 +81,7 @@ dependencies {
         exclude group: 'com.google.code.findbugs'
     })
     testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.2.12'
     // support
     compile "com.android.support:support-annotations:$support_version"
     compile "com.android.support:appcompat-v7:$support_version"
