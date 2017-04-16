@@ -1,13 +1,18 @@
 package ru.vandrikeev.android.phrasebook.ui.fragment.history;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import ru.vandrikeev.android.phrasebook.App;
 import ru.vandrikeev.android.phrasebook.R;
+import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.history.HistoryPresenter;
+import ru.vandrikeev.android.phrasebook.ui.adapter.TranslationAdapter;
 import ru.vandrikeev.android.phrasebook.ui.fragment.TranslationListFragment;
 
 /**
@@ -38,5 +43,24 @@ public class HistoryFragment extends TranslationListFragment {
     @Override
     protected void onClearOptionSelected() {
         presenter.clear();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        adapter = new TranslationAdapter(
+                new TranslationAdapter.OnClickTranslationListener() {
+                    @Override
+                    public void onClick(@NonNull HistoryTranslation translation) {
+//                        ((MainActivity) getActivity()).openTranslation(new Translation(translation));
+                    }
+                },
+                new TranslationAdapter.OnClickFavoriteListener() {
+                    @Override
+                    public void onClick(@NonNull HistoryTranslation translation) {
+//
+                    }
+                });
+        contentView.setAdapter(adapter);
     }
 }

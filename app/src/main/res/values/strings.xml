@@ -12,6 +12,12 @@
     <string name="spinner_prompt">Select language</string>
     <string name="translation_from_default" translatable="false">auto</string>
     <string name="translation_to_default" translatable="false">ru</string>
+    <string name="translation_from_label">Translated from %1$s</string>
+    <string name="input_text_hint">Tap to enter text</string>
+
+    <!-- Dialog -->
+    <string name="dialog_input_text_hint_lang">Enter text (%1$s)</string>
+    <string name="dialog_input_text_hint">Enter text</string>
 
     <!-- History -->
     <string name="action_clear">Clear</string>
@@ -20,8 +26,6 @@
 
     <!-- Reference -->
     <string name="yandex_reference" formatted="true">Powered by <a href='http://translate.yandex.com/'>Yandex.Translate</a></string>
-    <string name="translation_label">Translation:</string>
-    <string name="input_text_hint">Tap to enter text</string>
 
     <!-- Errors -->
     <string name="error_network">No internet connection</string>

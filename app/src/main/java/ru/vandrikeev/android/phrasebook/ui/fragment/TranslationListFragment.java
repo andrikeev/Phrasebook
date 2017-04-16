@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,7 +20,7 @@ import java.util.List;
 
 import ru.vandrikeev.android.phrasebook.R;
 import ru.vandrikeev.android.phrasebook.model.network.ErrorUtils;
-import ru.vandrikeev.android.phrasebook.model.translations.AbstractTranslation;
+import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.history.TranslationListView;
 import ru.vandrikeev.android.phrasebook.ui.adapter.TranslationAdapter;
@@ -27,8 +28,11 @@ import ru.vandrikeev.android.phrasebook.ui.adapter.TranslationAdapter;
 /**
  * Base fragment for list of translations.
  */
+@SuppressWarnings("NullableProblems")
 public abstract class TranslationListFragment
         extends BaseFragment<TranslationListView, RxPresenter<TranslationListView>> implements TranslationListView {
+
+    private static final String TAG = TranslationListFragment.class.getSimpleName();
 
     // region Fields
 
@@ -87,11 +91,11 @@ public abstract class TranslationListFragment
         emptyView.setCompoundDrawablesWithIntrinsicBounds(0, getEmptyDrawableRes(), 0, 0);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        adapter = new TranslationAdapter();
         contentView.setHasFixedSize(true);
         contentView.setLayoutManager(layoutManager);
         contentView.addItemDecoration(new DividerItemDecoration(getContext(), layoutManager.getOrientation()));
-        contentView.setAdapter(adapter);
+
+        Log.d(TAG, "Fragment created");
     }
 
     @Override
@@ -122,6 +126,7 @@ public abstract class TranslationListFragment
         contentView.setVisibility(View.GONE);
         emptyView.setVisibility(View.GONE);
         errorView.setVisibility(View.GONE);
+        Log.d(TAG, "Loading");
     }
 
     @Override
@@ -131,6 +136,7 @@ public abstract class TranslationListFragment
         contentView.setVisibility(View.VISIBLE);
         emptyView.setVisibility(View.GONE);
         errorView.setVisibility(View.GONE);
+        Log.d(TAG, "Show content");
     }
 
     @Override
@@ -140,6 +146,7 @@ public abstract class TranslationListFragment
         contentView.setVisibility(View.GONE);
         emptyView.setVisibility(View.VISIBLE);
         errorView.setVisibility(View.GONE);
+        Log.d(TAG, "Empty list");
     }
 
     @Override
@@ -150,20 +157,24 @@ public abstract class TranslationListFragment
         emptyView.setVisibility(View.GONE);
         errorView.setVisibility(View.VISIBLE);
         errorView.setText(ErrorUtils.getErrorMessage(e));
+        Log.d(TAG, String.format("Error %s", e.getMessage()));
     }
 
     @Override
     public void scrollToTop() {
         contentView.scrollToPosition(0);
+        Log.d(TAG, "Reset position");
     }
 
     @Override
     public void clearContent() {
+        TransitionManager.beginDelayedTransition((ViewGroup) getView());
         adapter.clear();
+        Log.d(TAG, "Clear list");
     }
 
     @Override
-    public void setModel(@NonNull List<? extends AbstractTranslation> model) {
+    public void setModel(@NonNull List<? extends HistoryTranslation> model) {
         adapter.addAll(model);
     }
 

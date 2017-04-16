@@ -1,11 +1,12 @@
 package ru.vandrikeev.android.phrasebook.model.responses;
 
 import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import org.junit.Before;
 import org.junit.Test;
-import ru.vandrikeev.android.phrasebook.model.languages.Language;
 
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
@@ -13,7 +14,12 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import ru.vandrikeev.android.phrasebook.model.languages.Language;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("Duplicates")
 public class ResponsesTest {
@@ -50,7 +56,7 @@ public class ResponsesTest {
 
         assertEquals(200, supportedLanguages.getCode());
 
-        List<Language> expected = new ArrayList<>();
+        final List<Language> expected = new ArrayList<>();
         expected.add(new Language("be", "Белорусский"));
         expected.add(new Language("de", "Немецкий"));
         expected.add(new Language("en", "Английский"));

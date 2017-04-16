@@ -1,7 +1,6 @@
 package ru.vandrikeev.android.phrasebook.presentation.presenter.translation;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.arellomobile.mvp.InjectViewState;
 
@@ -10,7 +9,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import ru.vandrikeev.android.phrasebook.Settings;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
 import ru.vandrikeev.android.phrasebook.model.languages.LanguageRepository;
 import ru.vandrikeev.android.phrasebook.model.network.YandexTranslateException;
@@ -31,16 +29,11 @@ public class LanguageSelectionPresenter extends RxPresenter<LanguageSelectionVie
     @NonNull
     private LanguageRepository languageRepository;
 
-    @NonNull
-    private Settings settings;
-
     @Inject
     public LanguageSelectionPresenter(@NonNull YandexTranslateService service,
-                                      @NonNull LanguageRepository languageRepository,
-                                      @NonNull Settings settings) {
+                                      @NonNull LanguageRepository languageRepository) {
         this.service = service;
         this.languageRepository = languageRepository;
-        this.settings = settings;
     }
 
     /**
@@ -89,26 +82,31 @@ public class LanguageSelectionPresenter extends RxPresenter<LanguageSelectionVie
         }
     }
 
-    public void saveLastSelectedLanguages(@Nullable Language from, @Nullable Language to) {
-        if (from != null) {
-            settings.setLanguageFrom(from.getCode());
-        }
-        if (to != null) {
-            settings.setLanguageTo(to.getCode());
-        }
+    /**
+     * Saves last selected language from.
+     *
+     * @param language selected language
+     */
+    public void saveLanguageFromSelection(@NonNull Language language) {
+        languageRepository.saveSelectedLanguageFrom(language);
     }
 
     /**
-     * Set up view on first attach.
+     * Saves last selected language to.
+     *
+     * @param language selected language
+     */
+    public void saveLanguageToSelection(@NonNull Language language) {
+        languageRepository.saveSelectedLanguageTo(language);
+    }
+
+    /**
+     * Sets up view on first attach.
      */
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        Language languageFrom = languageRepository.getLanguageByCode(settings.getLanguageFrom());
-        if (languageFrom == null) {
-            languageFrom = languageRepository.getAutodetect();
-        }
-        final Language languageTo = languageRepository.getLanguageByCode(settings.getLanguageTo());
-        getViewState().setUpSpinners(languageRepository.getLanguages(), languageFrom, languageTo);
+        getViewState().setUpWidget(languageRepository.getLanguages(), languageRepository.getSavedLanguageFrom(),
+                languageRepository.getSavedLanguageTo());
     }
 }

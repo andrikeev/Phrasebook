@@ -9,7 +9,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.functions.Consumer;
-import ru.vandrikeev.android.phrasebook.model.translations.Translation;
+import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.model.translations.TranslationRepository;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.history.TranslationListView;
@@ -35,10 +35,9 @@ public class FavoritesPresenter extends RxPresenter<TranslationListView> {
 
         disposable = repository.getFavorites()
                 .subscribe(
-                        new Consumer<List<Translation>>() {
+                        new Consumer<List<? extends HistoryTranslation>>() {
                             @Override
-                            @SuppressWarnings("NullableProblems")
-                            public void accept(@NonNull List<Translation> model) throws Exception {
+                            public void accept(@NonNull List<? extends HistoryTranslation> model) throws Exception {
                                 if (model.isEmpty()) {
                                     getViewState().showEmpty();
                                 } else {

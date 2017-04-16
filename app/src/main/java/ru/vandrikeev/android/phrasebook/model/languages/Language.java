@@ -3,6 +3,7 @@ package ru.vandrikeev.android.phrasebook.model.languages;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import ru.vandrikeev.android.phrasebook.R;
@@ -10,7 +11,7 @@ import ru.vandrikeev.android.phrasebook.R;
 /**
  * Language entity.
  */
-public class Language {
+public class Language implements Serializable {
 
     private static final String AUTODETECT = "auto";
 
@@ -42,7 +43,7 @@ public class Language {
      * Special language object that represents special case of translation when application should try to automatically
      * detect language of given text.
      */
-    static Language getAutodetect(Context context) {
+    static Language createAutodetect(@NonNull Context context) {
         return new Language(AUTODETECT, context.getString(R.string.spinner_autodetect));
     }
 

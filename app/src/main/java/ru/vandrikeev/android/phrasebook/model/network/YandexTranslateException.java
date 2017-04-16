@@ -5,7 +5,7 @@ package ru.vandrikeev.android.phrasebook.model.network;
  *
  * @see ru.vandrikeev.android.phrasebook.model.responses.BaseApiResponse#code
  */
-public class YandexTranslateException extends Throwable {
+public class YandexTranslateException extends Exception {
 
     /**
      * Code of error.

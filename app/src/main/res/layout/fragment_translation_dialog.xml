@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="16dp">
+
+    <EditText
+        android:id="@+id/textInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
+        android:imeActionId="@+id/textInputAction"
+        android:imeOptions="actionGo"
+        android:inputType="textAutoCorrect"
+        tools:text="Text"/>
+
+    <TextView
+        android:id="@+id/translation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        tools:text="Translation"/>
+
+    <ImageButton
+        android:id="@+id/actionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:padding="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        app:srcCompat="@drawable/arrow_forward_icon_selector"
+        tools:ignore="ContentDescription"/>
+
+</LinearLayout>

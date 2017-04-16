@@ -1,18 +1,26 @@
 package ru.vandrikeev.android.phrasebook.presentation.presenter.translation;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
+
 import com.arellomobile.mvp.InjectViewState;
+
+import javax.inject.Inject;
+
+import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
+import ru.vandrikeev.android.phrasebook.model.languages.LanguageRepository;
 import ru.vandrikeev.android.phrasebook.model.network.YandexTranslateException;
 import ru.vandrikeev.android.phrasebook.model.network.YandexTranslateService;
+import ru.vandrikeev.android.phrasebook.model.responses.DetectedLanguage;
 import ru.vandrikeev.android.phrasebook.model.responses.TranslationResponse;
+import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.model.translations.Translation;
 import ru.vandrikeev.android.phrasebook.model.translations.TranslationRepository;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.translation.TranslationView;
-
-import javax.inject.Inject;
 
 /**
  * Presenter for {@link TranslationView}.
@@ -26,13 +34,19 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
     @NonNull
     private TranslationRepository translationRepository;
 
-    private long currentTranslationId = -1;
+    @NonNull
+    private LanguageRepository languageRepository;
+
+    @Nullable
+    private Translation lastTranslation;
 
     @Inject
     public TranslationPresenter(@NonNull YandexTranslateService service,
-                                @NonNull TranslationRepository translationRepository) {
+                                @NonNull TranslationRepository translationRepository,
+                                @NonNull LanguageRepository languageRepository) {
         this.service = service;
         this.translationRepository = translationRepository;
+        this.languageRepository = languageRepository;
     }
 
     /**
@@ -46,95 +60,121 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
                           @NonNull final Language from,
                           @NonNull Language to) {
         dispose();
+        getViewState().setLoadingModel(text);
         getViewState().showLoading();
-        getViewState().setFavorite(false);
-
+        getViewState().enableFavorites(false);
         disposable = service.translate(from, to, text)
-                .subscribe(
-                        new Consumer<TranslationResponse>() {
+                .zipWith(service.detectLanguage(text),
+                        new BiFunction<TranslationResponse, DetectedLanguage, Translation>() {
+                            @NonNull
                             @Override
-                            @SuppressWarnings("NullableProblems")
-                            public void accept(@NonNull TranslationResponse translation) throws Exception {
-                                switch (translation.getCode()) {
+                            public Translation apply(@NonNull TranslationResponse translationResponse,
+                                                     @NonNull DetectedLanguage detectedLanguage) throws Exception {
+                                switch (translationResponse.getCode()) {
                                     case 200:
-                                        getViewState().setModel(translation.getText());
-                                        final String translationDirection = translation.getTranslationDirection();
-                                        if (translationDirection != null && !translationDirection.isEmpty()) {
-                                            int idx = translationDirection.indexOf('-');
-                                            final String fromCode =
-                                                    translationDirection.substring(0, idx).toUpperCase();
-                                            final String toCode = translationDirection.substring(
-                                                    idx + 1, translationDirection.length()).toUpperCase();
-
-                                            if (from.isAutodetect()) {
-                                                getViewState().setDetectedLanguage(fromCode);
-                                            }
-                                            saveToHistory(fromCode, toCode, text, translation.getText());
-                                        }
-                                        break;
+                                        final Pair<Language, Language> translationDirection =
+                                                languageRepository.getDirection(
+                                                        translationResponse.getTranslationDirection());
+                                        final Language realLanguage =
+                                                languageRepository.getLanguageByCode(detectedLanguage.getLanguage());
+                                        return new Translation(
+                                                text,
+                                                translationResponse.getText(),
+                                                translationDirection.first,
+                                                realLanguage,
+                                                translationDirection.second
+                                        );
                                     default:
-                                        getViewState().showError(new YandexTranslateException(translation.getCode(),
-                                                translation.getMessage()));
-                                        break;
+                                        throw new YandexTranslateException(translationResponse.getCode(),
+                                                translationResponse.getMessage());
                                 }
+                            }
+                        })
+                .subscribe(
+                        new Consumer<Translation>() {
+                            @Override
+                            public void accept(@NonNull Translation translation) throws Exception {
+                                getViewState().setModel(translation);
+                                getViewState().setFavorite(false);
                                 getViewState().showContent();
+                                saveToHistory(translation);
                             }
                         },
                         new Consumer<Throwable>() {
                             @Override
-                            @SuppressWarnings("NullableProblems")
                             public void accept(@NonNull Throwable e) throws Exception {
                                 getViewState().showError(e);
                             }
                         });
     }
 
+    public void clearView() {
+        dispose();
+        getViewState().clearView();
+    }
+
+    public void setTranslation(@NonNull Translation translation) {
+        dispose();
+        getViewState().setModel(translation);
+        getViewState().showContent();
+        saveToHistory(translation);
+    }
+
     /**
      * Persists current translation.
      *
-     * @param from        language translated from
-     * @param to          language translated to
-     * @param text        translated text
      * @param translation translation
      */
-    private void saveToHistory(@NonNull String from,
-                               @NonNull String to,
-                               @NonNull String text,
-                               @NonNull String translation) {
-        disposable = translationRepository.saveToRecents(from, to, text, translation)
+    private void saveToHistory(@NonNull final Translation translation) {
+        lastTranslation = translation;
+        disposable = translationRepository.saveToRecents(translation)
                 .subscribe(
-                        new Consumer<Translation>() {
+                        new Consumer<HistoryTranslation>() {
                             @Override
-                            @SuppressWarnings("NullableProblems")
-                            public void accept(@NonNull Translation model) throws Exception {
-                                currentTranslationId = model.getId();
+                            public void accept(@NonNull HistoryTranslation translation) throws Exception {
+                                getViewState().enableFavorites(true);
+                                getViewState().setFavorite(translation.isFavorite());
+                            }
+                        },
+                        new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable e) throws Exception {
+                                getViewState().showError(e);
                             }
                         }
                 );
     }
 
     /**
-     * Persists favorite state for last successful translation with id {@link #currentTranslationId}
+     * Persists favorite state for last successful translation {@link #lastTranslation}
      *
      * @param favorite new favorite state
      */
     public void setFavorite(final boolean favorite) {
-        disposable = translationRepository.setFavorite(currentTranslationId, favorite)
-                .subscribe(
-                        new Consumer<Integer>() {
-                            @Override
-                            @SuppressWarnings("NullableProblems")
-                            public void accept(@NonNull Integer result) throws Exception {
-                                getViewState().setFavorite(favorite);
+        if (lastTranslation != null) {
+            disposable = translationRepository.setFavorite(lastTranslation, favorite)
+                    .subscribe(
+                            new Consumer<HistoryTranslation>() {
+                                @Override
+                                public void accept(@NonNull HistoryTranslation translation) throws Exception {
+                                    getViewState().setFavorite(translation.isFavorite());
+                                }
+                            },
+                            new Consumer<Throwable>() {
+                                @Override
+                                public void accept(@NonNull Throwable e) throws Exception {
+                                    getViewState().showError(e);
+                                }
                             }
-                        },
-                        new Consumer<Throwable>() {
-                            @Override
-                            @SuppressWarnings("NullableProblems")
-                            public void accept(@NonNull Throwable e) throws Exception {
-                                getViewState().showError(e);
-                            }
-                        }
-                );
+                    );
+        } else {
+            getViewState().enableFavorites(false);
+        }
+    }
+
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        getViewState().clearView();
     }
 }

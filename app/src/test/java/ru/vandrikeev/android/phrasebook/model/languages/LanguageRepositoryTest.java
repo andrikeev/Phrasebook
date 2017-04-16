@@ -3,19 +3,24 @@ package ru.vandrikeev.android.phrasebook.model.languages;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import ru.vandrikeev.android.phrasebook.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.vandrikeev.android.phrasebook.R;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+@SuppressWarnings("NullableProblems")
 public class LanguageRepositoryTest {
 
     @Mock
@@ -56,9 +61,8 @@ public class LanguageRepositoryTest {
 
         final List<Language> languages = languageRepository.getLanguages();
         assertEquals("Size doesn't match", expected.size(), languages.size());
-        for (Language language : expected) {
-            assertTrue(String.format("List does not contain required language %s", language),
-                    languages.contains(language));
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals("Item doesn't match", expected.get(i), languages.get(i));
         }
     }
 

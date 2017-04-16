@@ -3,9 +3,11 @@ package ru.vandrikeev.android.phrasebook.model.languages;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+
 import ru.vandrikeev.android.phrasebook.R;
 
 import static org.junit.Assert.assertEquals;
@@ -33,7 +35,7 @@ public class LanguageTest {
 
     @Test
     public void test_getAutodetect() throws Exception {
-        final Language language = Language.getAutodetect(context);
+        final Language language = Language.createAutodetect(context);
         assertTrue(language.isAutodetect());
         assertEquals(language, new Language("auto", "Autodetect"));
     }

@@ -8,12 +8,22 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.requery.Persistable;
+import io.requery.android.sqlite.DatabaseSource;
+import io.requery.reactivex.ReactiveEntityStore;
+import io.requery.reactivex.ReactiveSupport;
+import io.requery.sql.Configuration;
+import io.requery.sql.ConfigurationBuilder;
+import io.requery.sql.EntityDataStore;
+import ru.vandrikeev.android.phrasebook.model.translations.Models;
 
 /**
  * Module for application context dependencies.
  */
 @Module
 final public class AppModule {
+
+    private static final String DB_NAME = "history";
 
     @NonNull
     private Application application;
@@ -32,5 +42,23 @@ final public class AppModule {
     @NonNull
     public Context provideContext() {
         return application.getApplicationContext();
+    }
+
+    @Provides
+    @Singleton
+    @NonNull
+    public ReactiveEntityStore<Persistable> provideDataStore() {
+        final DatabaseSource source = new DatabaseSource(application, Models.DEFAULT, DB_NAME, 1) {
+            @Override
+            protected void onConfigure(ConfigurationBuilder builder) {
+                super.onConfigure(builder);
+                builder.setQuoteColumnNames(true);
+                setLoggingEnabled(true);
+                setWriteAheadLoggingEnabled(true);
+            }
+        };
+        final Configuration configuration = source.getConfiguration();
+        final EntityDataStore<Persistable> dataStore = new EntityDataStore<>(configuration);
+        return ReactiveSupport.toReactiveStore(dataStore);
     }
 }

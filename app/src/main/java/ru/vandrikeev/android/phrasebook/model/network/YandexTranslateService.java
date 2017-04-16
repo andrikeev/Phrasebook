@@ -10,6 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.vandrikeev.android.phrasebook.BuildConfig;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
+import ru.vandrikeev.android.phrasebook.model.responses.DetectedLanguage;
 import ru.vandrikeev.android.phrasebook.model.responses.SupportedLanguages;
 import ru.vandrikeev.android.phrasebook.model.responses.TranslationResponse;
 
@@ -55,6 +56,19 @@ public class YandexTranslateService {
                 : String.format("%s-%s", from.getCode(), to.getCode());
 
         return api.translate(BuildConfig.API_KEY, text, direction)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     * Asynchronously detects language for given text.
+     *
+     * @param text text to detect language
+     * @return {@link Single} of {@link DetectedLanguage} response observable on Android main thread
+     */
+    @NonNull
+    public Single<DetectedLanguage> detectLanguage(@NonNull String text) {
+        return api.detectLanguage(BuildConfig.API_KEY, text)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

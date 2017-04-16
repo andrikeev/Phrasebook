@@ -15,14 +15,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.arellomobile.mvp.MvpDelegate;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.transitionseverywhere.TransitionManager;
 
 import java.util.List;
 
@@ -39,6 +37,7 @@ import ru.vandrikeev.android.phrasebook.ui.adapter.LanguageAdapter;
 /**
  * Part of translation screen that response of selecting translation direction.
  */
+@SuppressWarnings("NullableProblems")
 public class LanguageSelectionWidget extends FrameLayout implements LanguageSelectionView {
 
     private static final String TAG = LanguageSelectionWidget.class.getSimpleName();
@@ -63,19 +62,13 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
     private ImageButton swapLanguagesButton;
 
     @NonNull
-    private ProgressBar loadingView;
-
-    @NonNull
     private LanguageAdapter languageFromAdapter;
 
     @NonNull
     private LanguageAdapter languageToAdapter;
 
     @Nullable
-    private OnLanguageFromSelectedListener languageFromSelectedListener;
-
-    @Nullable
-    private OnLanguageToSelectedListener languageToSelectedListener;
+    private OnLanguageSelectedListener onLanguageSelectedListener;
 
     @NonNull
     @InjectPresenter
@@ -100,6 +93,7 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
         onCreateView(context);
     }
 
+    @SuppressWarnings("unused")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public LanguageSelectionWidget(@NonNull Context context,
                                    @Nullable AttributeSet attrs,
@@ -151,44 +145,10 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
         languageFromAdapter = new LanguageAdapter();
         languageFromSpinner = (Spinner) findViewById(R.id.languageFromSpinner);
         languageFromSpinner.setAdapter(languageFromAdapter);
-        languageFromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, String.format("Language FROM selected: position %d; item %s",
-                        position, languageFromSpinner.getSelectedItem()));
-                final Language language = getLanguageFrom();
-                loadSupportedLanguages(language);
-                swapLanguagesButton.setEnabled(!language.isAutodetect());
-                if (languageFromSelectedListener != null) {
-                    languageFromSelectedListener.onSelected(language);
-                }
-                presenter.saveLastSelectedLanguages(getLanguageFrom(), getLanguageTo());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
 
         languageToAdapter = new LanguageAdapter();
         languageToSpinner = (Spinner) findViewById(R.id.languageToSpinner);
         languageToSpinner.setAdapter(languageToAdapter);
-        languageToSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, String.format("Language TO selected: position %d; item %s",
-                        position, languageToSpinner.getSelectedItem()));
-                final Language language = getLanguageTo();
-                if (languageToSelectedListener != null) {
-                    languageToSelectedListener.onSelected(language);
-                }
-                presenter.saveLastSelectedLanguages(getLanguageFrom(), getLanguageTo());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
 
         swapLanguagesButton = (ImageButton) findViewById(R.id.swapLanguagesButton);
         swapLanguagesButton.setOnClickListener(new OnClickListener() {
@@ -200,18 +160,9 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
                 final int newFromPosition = languageFromAdapter.getItemPosition(to);
                 final int newToPosition = languageToAdapter.getItemPosition(from);
                 languageFromSpinner.setSelection(newFromPosition);
-                if (newToPosition != -1) {
-                    languageToSpinner.setSelection(newToPosition);
-                }
-                Toast.makeText(getContext(), "Swap clicked", Toast.LENGTH_SHORT).show();
+                languageToSpinner.setSelection(newToPosition > 0 ? newToPosition : 0);
             }
         });
-
-        loadingView = (ProgressBar) findViewById(R.id.loadingView);
-    }
-
-    public void loadSupportedLanguages(@NonNull Language language) {
-        presenter.loadSupportedLanguages(language);
     }
 
     @NonNull
@@ -224,69 +175,70 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
         return (Language) languageToSpinner.getSelectedItem();
     }
 
-    // region Listeners
-
-    public void setOnLanguageFromSelectedListener(@NonNull OnLanguageFromSelectedListener listener) {
-        this.languageFromSelectedListener = listener;
-    }
-
-    public void setOnLanguageToSelectedListener(@NonNull OnLanguageToSelectedListener listener) {
-        this.languageToSelectedListener = listener;
-    }
-
-    // endregion
-
     // region LanguageSelectionView
 
     @Override
+    public void setUpWidget(@NonNull List<Language> languages,
+                            @NonNull Language languageFromPreference,
+                            @NonNull Language languageToPreference) {
+        Log.d(TAG, String.format("setUpWidget: %s, from %s, to %s",
+                languages, languageFromPreference, languageToPreference));
+        languageFromAdapter.addAll(languages);
+        languageFromSpinner.setSelection(languageFromAdapter.getItemPosition(languageFromPreference));
+        languageFromSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onSelected() {
+                final Language language = getLanguageFrom();
+                presenter.saveLanguageFromSelection(language);
+                presenter.loadSupportedLanguages(language);
+                swapLanguagesButton.setEnabled(!language.isAutodetect());
+                Log.d(TAG, String.format("Language FROM selected: %s", language));
+            }
+        });
+
+        languageToAdapter.addAll(languages.subList(1, languages.size()));
+        languageToSpinner.setSelection(languageToAdapter.getItemPosition(languageToPreference));
+        languageToSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onSelected() {
+                final Language language = getLanguageTo();
+                presenter.saveLanguageToSelection(getLanguageTo());
+                if (onLanguageSelectedListener != null) {
+                    onLanguageSelectedListener.onSelected();
+                }
+                Log.d(TAG, String.format("Language TO selected: %s", language));
+            }
+        });
+    }
+
+    @Override
     public void showLoading() {
-        TransitionManager.beginDelayedTransition(this);
         languageToSpinner.setEnabled(false);
-        swapLanguagesButton.setVisibility(INVISIBLE);
-        loadingView.setVisibility(VISIBLE);
+        swapLanguagesButton.setEnabled(false);
         Log.d(TAG, "Loading available languages");
     }
 
     @Override
     public void setModel(@NonNull List<Language> model) {
         final Language oldLanguage = getLanguageTo();
-        final boolean isOldLanguageAvailable = model.contains(oldLanguage);
+        final int oldLanguageIndex = model.indexOf(oldLanguage);
         languageToAdapter.addAll(model);
-        languageToSpinner.setSelection(isOldLanguageAvailable ? model.indexOf(oldLanguage) : 0, true);
-        if (languageToSelectedListener != null) {
-            languageToSelectedListener.onSelected(getLanguageTo());
-        }
-        Log.d(TAG, String.format("Languages loaded! %s\nOld selected language - %s\nNew language - %s", model,
+        languageToSpinner.setSelection(oldLanguageIndex > 0 ? oldLanguageIndex : 0);
+        Log.d(TAG, String.format("Languages loaded! %s\nOld selected language: %s\nNew language: %s", model,
                 oldLanguage, languageToSpinner.getSelectedItem()));
     }
 
     @Override
-    public void setUpSpinners(@NonNull List<Language> languages,
-                              @NonNull Language languageFromPreference,
-                              @Nullable Language languageToPreference) {
-        languageToAdapter.addAll(languages.subList(1, languages.size()));
-        if (languageToPreference != null) {
-            languageToSpinner.setSelection(languageToAdapter.getItemPosition(languageToPreference));
-        }
-        languageFromAdapter.addAll(languages);
-        languageFromSpinner.setSelection(languageFromAdapter.getItemPosition(languageFromPreference));
-    }
-
-    @Override
     public void showContent() {
-        TransitionManager.beginDelayedTransition(this);
         languageToSpinner.setEnabled(true);
-        swapLanguagesButton.setVisibility(VISIBLE);
-        loadingView.setVisibility(INVISIBLE);
+        swapLanguagesButton.setEnabled(!getLanguageFrom().isAutodetect());
         Log.d(TAG, "Showing available languages");
     }
 
     @Override
     public void showError(@NonNull Throwable e) {
-        TransitionManager.beginDelayedTransition(this);
         languageToSpinner.setEnabled(false);
-        swapLanguagesButton.setVisibility(VISIBLE);
-        loadingView.setVisibility(INVISIBLE);
+        swapLanguagesButton.setEnabled(!getLanguageFrom().isAutodetect());
         final String message = BuildConfig.DEBUG
                 ? String.format("Error: %s; %s", e.getMessage(), e.toString())
                 : getContext().getString(ErrorUtils.getErrorMessage(e));
@@ -294,12 +246,34 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
         Log.e(TAG, "Error while loading languages", e);
     }
 
-    public interface OnLanguageFromSelectedListener {
-        void onSelected(@NonNull Language language);
+    // endregion
+
+    // region Listeners
+
+    public void setOnLanguageSelectedListener(@NonNull OnLanguageSelectedListener listener) {
+        this.onLanguageSelectedListener = listener;
     }
 
-    public interface OnLanguageToSelectedListener {
-        void onSelected(@NonNull Language language);
+    public void removeOnLanguageSelectedListener() {
+        this.onLanguageSelectedListener = null;
+    }
+
+    private abstract class OnItemSelectedListener implements AdapterView.OnItemSelectedListener {
+
+        public abstract void onSelected();
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            onSelected();
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
+    }
+
+    public interface OnLanguageSelectedListener {
+        void onSelected();
     }
 
     // endregion
