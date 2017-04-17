@@ -1,29 +1,26 @@
 package ru.vandrikeev.android.phrasebook.ui.fragment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import com.transitionseverywhere.TransitionManager;
-
-import java.util.List;
-
 import ru.vandrikeev.android.phrasebook.R;
 import ru.vandrikeev.android.phrasebook.model.network.ErrorUtils;
 import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.history.TranslationListView;
 import ru.vandrikeev.android.phrasebook.ui.adapter.TranslationAdapter;
+
+import java.util.List;
 
 /**
  * Base fragment for list of translations.
@@ -37,16 +34,16 @@ public abstract class TranslationListFragment
     // region Fields
 
     @NonNull
-    protected View loadingView;
+    private View loadingView;
 
     @NonNull
     protected RecyclerView contentView;
 
     @NonNull
-    protected TextView errorView;
+    private TextView errorView;
 
     @NonNull
-    protected TextView emptyView;
+    private TextView emptyView;
 
     @NonNull
     protected TranslationAdapter adapter;
@@ -61,6 +58,12 @@ public abstract class TranslationListFragment
     protected abstract int getEmptyLabelRes();
 
     protected abstract int getEmptyDrawableRes();
+
+    protected abstract int getClearedMessageRes();
+
+    protected abstract int getClearMessageRes();
+
+    protected abstract void onClearOptionSelected();
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -108,14 +111,27 @@ public abstract class TranslationListFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.history_clear:
-                onClearOptionSelected();
+                new AlertDialog.Builder(getContext())
+                        .setMessage(getClearMessageRes())
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                onClearOptionSelected();
+                            }
+                        })
+                        .create()
+                        .show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    protected abstract void onClearOptionSelected();
 
     // region TranslationListView
 
@@ -170,6 +186,7 @@ public abstract class TranslationListFragment
     public void clearContent() {
         TransitionManager.beginDelayedTransition((ViewGroup) getView());
         adapter.clear();
+        Toast.makeText(getContext(), getClearedMessageRes(), Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Clear list");
     }
 

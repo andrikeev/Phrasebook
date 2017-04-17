@@ -3,11 +3,7 @@ package ru.vandrikeev.android.phrasebook.presentation.presenter.translation;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
-
 import com.arellomobile.mvp.InjectViewState;
-
-import javax.inject.Inject;
-
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
@@ -21,6 +17,8 @@ import ru.vandrikeev.android.phrasebook.model.translations.Translation;
 import ru.vandrikeev.android.phrasebook.model.translations.TranslationRepository;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.translation.TranslationView;
+
+import javax.inject.Inject;
 
 /**
  * Presenter for {@link TranslationView}.
@@ -62,7 +60,7 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
         dispose();
         getViewState().setLoadingModel(text);
         getViewState().showLoading();
-        getViewState().enableFavorites(false);
+        getViewState().enableFavorite(false);
         disposable = service.translate(from, to, text)
                 .zipWith(service.detectLanguage(text),
                         new BiFunction<TranslationResponse, DetectedLanguage, Translation>() {
@@ -95,7 +93,6 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
                             @Override
                             public void accept(@NonNull Translation translation) throws Exception {
                                 getViewState().setModel(translation);
-                                getViewState().setFavorite(false);
                                 getViewState().showContent();
                                 saveToHistory(translation);
                             }
@@ -132,7 +129,7 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
                         new Consumer<HistoryTranslation>() {
                             @Override
                             public void accept(@NonNull HistoryTranslation translation) throws Exception {
-                                getViewState().enableFavorites(true);
+                                getViewState().enableFavorite(true);
                                 getViewState().setFavorite(translation.isFavorite());
                             }
                         },
@@ -168,7 +165,7 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
                             }
                     );
         } else {
-            getViewState().enableFavorites(false);
+            getViewState().enableFavorite(false);
         }
     }
 

@@ -23,9 +23,15 @@
     <string name="action_clear">Clear</string>
     <string name="empty_history">Here there will be\nrecent translations</string>
     <string name="empty_favorites">Here there will be\nfavorites translations</string>
+    <string name="history_cleared">History cleared</string>
+    <string name="favorites_cleared">Favorites cleared</string>
+    <string name="clear_history_message">Clear history?\nFavorites will be also cleared</string>
+    <string name="clear_favorites_message">Clear favorites?</string>
 
     <!-- Reference -->
-    <string name="yandex_reference" formatted="true">Powered by <a href='http://translate.yandex.com/'>Yandex.Translate</a></string>
+    <string name="yandex_reference" formatted="true">Powered by
+        <a href='http://translate.yandex.com/'>Yandex.Translate</a>
+    </string>
 
     <!-- Errors -->
     <string name="error_network">No internet connection</string>

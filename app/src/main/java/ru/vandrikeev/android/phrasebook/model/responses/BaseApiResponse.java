@@ -1,13 +1,11 @@
 package ru.vandrikeev.android.phrasebook.model.responses;
 
 import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Base API response model.
  */
-@SuppressWarnings("FieldCanBeLocal")
 public abstract class BaseApiResponse {
 
     /**

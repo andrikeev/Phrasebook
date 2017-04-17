@@ -1,7 +1,6 @@
 package ru.vandrikeev.android.phrasebook.model.responses;
 
 import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.List;
 /**
  * API response for translation request.
  */
-@SuppressWarnings({"unused", "MismatchedQueryAndUpdateOfCollection", "NullableProblems"})
+@SuppressWarnings("NullableProblems")
 public final class TranslationResponse extends BaseApiResponse {
 
     /**
@@ -21,7 +20,7 @@ public final class TranslationResponse extends BaseApiResponse {
     private List<String> text = new ArrayList<>();
 
     /**
-     * HistoryTranslation direction in 'from-to' format.
+     * Translation direction in 'from-to' format.
      */
     @NonNull
     @SerializedName("lang")

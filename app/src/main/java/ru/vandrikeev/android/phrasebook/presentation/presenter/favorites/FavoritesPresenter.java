@@ -1,21 +1,18 @@
 package ru.vandrikeev.android.phrasebook.presentation.presenter.favorites;
 
 import android.support.annotation.NonNull;
-
 import com.arellomobile.mvp.InjectViewState;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
 import io.reactivex.functions.Consumer;
 import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.model.translations.TranslationRepository;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.history.TranslationListView;
 
+import javax.inject.Inject;
+import java.util.List;
+
 /**
- * Presenter for favorites view.
+ * Presenter for {@link TranslationListView} with favorite translations.
  */
 @InjectViewState
 public class FavoritesPresenter extends RxPresenter<TranslationListView> {
@@ -28,10 +25,9 @@ public class FavoritesPresenter extends RxPresenter<TranslationListView> {
         this.repository = repository;
     }
 
-    public void getTranslations() {
+    private void getTranslations() {
         dispose();
         getViewState().showLoading();
-        getViewState().clearContent();
 
         disposable = repository.getFavorites()
                 .subscribe(

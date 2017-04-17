@@ -1,20 +1,17 @@
 package ru.vandrikeev.android.phrasebook.model.responses;
 
 import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
+import ru.vandrikeev.android.phrasebook.model.languages.Language;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ru.vandrikeev.android.phrasebook.model.languages.Language;
-
 /**
  * API response with list of languages supported for translation.
  */
-@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public final class SupportedLanguages extends BaseApiResponse {
 
     /**

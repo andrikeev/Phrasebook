@@ -1,13 +1,7 @@
 package ru.vandrikeev.android.phrasebook.presentation.presenter.translation;
 
 import android.support.annotation.NonNull;
-
 import com.arellomobile.mvp.InjectViewState;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
 import io.reactivex.functions.Consumer;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
 import ru.vandrikeev.android.phrasebook.model.languages.LanguageRepository;
@@ -16,6 +10,9 @@ import ru.vandrikeev.android.phrasebook.model.network.YandexTranslateService;
 import ru.vandrikeev.android.phrasebook.model.responses.SupportedLanguages;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.translation.LanguageSelectionView;
+
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Presenter for {@link LanguageSelectionView}.
@@ -106,7 +103,9 @@ public class LanguageSelectionPresenter extends RxPresenter<LanguageSelectionVie
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        getViewState().setUpWidget(languageRepository.getLanguages(), languageRepository.getSavedLanguageFrom(),
+        getViewState().setUpWidget(
+                languageRepository.getLanguages(),
+                languageRepository.getSavedLanguageFrom(),
                 languageRepository.getSavedLanguageTo());
     }
 }

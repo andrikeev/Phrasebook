@@ -1,30 +1,42 @@
 package ru.vandrikeev.android.phrasebook.model.translations;
 
 import android.support.annotation.NonNull;
+import ru.vandrikeev.android.phrasebook.model.languages.Language;
 
 import java.io.Serializable;
 
-import ru.vandrikeev.android.phrasebook.model.languages.Language;
-
 /**
- * Abstract translation entity for requery annotation processor.
- * <p>
- * Used to generate {@link Translation} class.
+ * Translation model.
  */
 public class Translation implements Serializable {
 
+    /**
+     * Text to be translated.
+     */
     @NonNull
     private String text;
 
+    /**
+     * Translations.
+     */
     @NonNull
     private String translation;
 
+    /**
+     * Language to translate from.
+     */
     @NonNull
     private Language languageFrom;
 
+    /**
+     * Real language of translated text.
+     */
     @NonNull
     private Language realLanguageFrom;
 
+    /**
+     * Language to translate to.
+     */
     @NonNull
     private Language languageTo;
 

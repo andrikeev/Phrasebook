@@ -14,11 +14,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.transitionseverywhere.TransitionManager;
-
 import ru.vandrikeev.android.phrasebook.App;
 import ru.vandrikeev.android.phrasebook.R;
 import ru.vandrikeev.android.phrasebook.model.translations.Translation;
@@ -271,7 +269,7 @@ public class TranslationFragment
     }
 
     @Override
-    public void enableFavorites(boolean enabled) {
+    public void enableFavorite(boolean enabled) {
         TransitionManager.beginDelayedTransition((ViewGroup) getView());
         favoriteButton.setEnabled(enabled);
         Log.d(TAG, String.format("Favorite button enabled state '%s'", enabled));
