@@ -21,6 +21,7 @@ public interface YandexTranslateApi {
     Single<TranslationResponse> translate(@Query("key") String apiKey,
                                           @Query("text") String text,
                                           @Query("lang") String translationDirection);
+
     @GET("detect")
     Single<DetectedLanguage> detectLanguage(@Query("key") String apiKey, @Query("text") String testText);
 }

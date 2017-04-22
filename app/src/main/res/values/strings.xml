@@ -28,6 +28,10 @@
     <string name="clear_history_message">Clear history?\nFavorites will be also cleared</string>
     <string name="clear_favorites_message">Clear favorites?</string>
 
+    <!-- Clipboard -->
+    <string name="clipboard_translation_title">Translation</string>
+    <string name="translation_copied_to_clipboard">Translation copied to clipboard</string>
+
     <!-- Reference -->
     <string name="yandex_reference" formatted="true">Powered by
         <a href='http://translate.yandex.com/'>Yandex.Translate</a>
@@ -42,4 +46,5 @@
     <string name="error_api_text_size">Exceeded the maximum text size</string>
     <string name="error_api_cannot_translate">The text cannot be translated</string>
     <string name="error_api_not_supported">The specified translation direction is not supported</string>
+    <string name="action_refresh">Refresh</string>
 </resources>

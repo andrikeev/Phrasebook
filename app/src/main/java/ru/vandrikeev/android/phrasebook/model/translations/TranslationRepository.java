@@ -1,6 +1,15 @@
 package ru.vandrikeev.android.phrasebook.model.translations;
 
 import android.support.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
@@ -10,13 +19,6 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.requery.Persistable;
 import io.requery.reactivex.ReactiveEntityStore;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Repository for saved both recent and favorite translations.

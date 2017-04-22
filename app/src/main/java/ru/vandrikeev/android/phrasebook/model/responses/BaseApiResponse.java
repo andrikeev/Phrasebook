@@ -1,6 +1,7 @@
 package ru.vandrikeev.android.phrasebook.model.responses;
 
 import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 /**

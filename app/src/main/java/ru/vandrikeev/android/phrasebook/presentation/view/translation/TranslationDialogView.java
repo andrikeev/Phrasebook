@@ -1,6 +1,7 @@
 package ru.vandrikeev.android.phrasebook.presentation.view.translation;
 
 import android.support.annotation.NonNull;
+
 import ru.vandrikeev.android.phrasebook.model.translations.Translation;
 import ru.vandrikeev.android.phrasebook.presentation.view.BaseView;
 

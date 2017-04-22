@@ -10,15 +10,20 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.transitionseverywhere.TransitionManager;
+
 import ru.vandrikeev.android.phrasebook.App;
 import ru.vandrikeev.android.phrasebook.R;
+import ru.vandrikeev.android.phrasebook.model.network.ErrorUtils;
 import ru.vandrikeev.android.phrasebook.model.translations.Translation;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.translation.TranslationPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.translation.TranslationView;
@@ -52,9 +57,6 @@ public class TranslationFragment
     private ProgressBar loadingView;
 
     @NonNull
-    private ImageButton clearButton;
-
-    @NonNull
     private TextView languageFromLabel;
 
     @NonNull
@@ -68,6 +70,21 @@ public class TranslationFragment
 
     @NonNull
     private CardView translationCard;
+
+    @NonNull
+    private CardView textInputCard;
+
+    @NonNull
+    private CardView textViewCard;
+
+    @NonNull
+    private CardView errorCard;
+
+    @NonNull
+    private TextView errorMessageView;
+
+    @NonNull
+    private Button reloadButton;
 
     @NonNull
     private ImageButton favoriteButton;
@@ -98,12 +115,10 @@ public class TranslationFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // region Language selection widget
         languageSelectionWidget = ((LanguageSelectionWidget) view.findViewById(R.id.languageSelector));
         languageSelectionWidget.init(getMvpDelegate());
-
-        loadingView = (ProgressBar) view.findViewById(R.id.loadingView);
-
-        languageFromLabel = (TextView) view.findViewById(R.id.languageFromLabel);
+        // endregion
 
         final TranslationDialogFragment.OnTranslateButtonClickedListener listener =
                 new TranslationDialogFragment.OnTranslateButtonClickedListener() {
@@ -119,6 +134,8 @@ public class TranslationFragment
                     }
                 };
 
+        // region Text input card
+        textInputCard = (CardView) view.findViewById(R.id.textInputCard);
         inputTextEdit = (EditText) view.findViewById(R.id.textInput);
         inputTextEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,7 +149,12 @@ public class TranslationFragment
                 fragment.show(getFragmentManager(), fragment.getClass().getSimpleName());
             }
         });
+        // endregion
 
+        // region Text view card
+        textViewCard = (CardView) view.findViewById(R.id.textViewCard);
+        loadingView = (ProgressBar) view.findViewById(R.id.loadingView);
+        languageFromLabel = (TextView) view.findViewById(R.id.languageFromLabel);
         inputTextView = (TextView) view.findViewById(R.id.text);
         inputTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,23 +168,20 @@ public class TranslationFragment
                 fragment.show(getFragmentManager(), fragment.getClass().getSimpleName());
             }
         });
-
-        clearButton = (ImageButton) view.findViewById(R.id.clearButton);
+        final ImageButton clearButton = (ImageButton) view.findViewById(R.id.clearButton);
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 presenter.clearView();
             }
         });
+        // endregion
 
+        // region Translation card
         translationCard = (CardView) view.findViewById(R.id.translationCard);
-
         realLanguageFromLabel = (TextView) view.findViewById(R.id.realLanguageFromLabel);
-
         languageToLabel = (TextView) view.findViewById(R.id.languageToLabel);
-
         translationTextView = (TextView) view.findViewById(translation);
-
         favoriteButton = (ImageButton) view.findViewById(R.id.favoriteButton);
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,16 +189,31 @@ public class TranslationFragment
                 presenter.setFavorite(!isFavorite);
             }
         });
-
         final ImageButton copyButton = (ImageButton) view.findViewById(R.id.copyButton);
         copyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final String translation = translationTextView.getText().toString();
                 ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(CLIPBOARD_SERVICE);
-                clipboard.setPrimaryClip(ClipData.newPlainText("Translation", translation));
+                final ClipData clipData =
+                        ClipData.newPlainText(getString(R.string.clipboard_translation_title), translation);
+                clipboard.setPrimaryClip(clipData);
+                Toast.makeText(getContext(), R.string.translation_copied_to_clipboard, Toast.LENGTH_SHORT).show();
             }
         });
+        // endregion
+
+        // region Error card
+        errorCard = (CardView) view.findViewById(R.id.errorCard);
+        errorMessageView = (TextView) view.findViewById(R.id.errorMessageView);
+        reloadButton = (Button) view.findViewById(R.id.reloadButton);
+        reloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                presenter.translate();
+            }
+        });
+        // endregion
 
         yandexReference = (TextView) view.findViewById(R.id.yandexReference);
 
@@ -188,16 +222,14 @@ public class TranslationFragment
 
     // region TranslationView
 
-
     @Override
     public void clearView() {
         TransitionManager.beginDelayedTransition((ViewGroup) getView());
-        translationCard.setVisibility(View.INVISIBLE);
-        languageFromLabel.setVisibility(View.INVISIBLE);
-        clearButton.setVisibility(View.GONE);
-        inputTextView.setVisibility(View.GONE);
-        inputTextEdit.setVisibility(View.VISIBLE);
         yandexReference.setVisibility(View.GONE);
+        errorCard.setVisibility(View.GONE);
+        translationCard.setVisibility(View.GONE);
+        textViewCard.setVisibility(View.GONE);
+        textInputCard.setVisibility(View.VISIBLE);
         languageSelectionWidget.removeOnLanguageSelectedListener();
     }
 
@@ -205,12 +237,12 @@ public class TranslationFragment
     public void showLoading() {
         TransitionManager.beginDelayedTransition((ViewGroup) getView());
         yandexReference.setVisibility(View.GONE);
-        translationCard.setVisibility(View.INVISIBLE);
-        loadingView.setVisibility(View.VISIBLE);
+        errorCard.setVisibility(View.GONE);
+        translationCard.setVisibility(View.GONE);
+        textInputCard.setVisibility(View.GONE);
+        textViewCard.setVisibility(View.VISIBLE);
         languageFromLabel.setVisibility(View.INVISIBLE);
-        clearButton.setVisibility(View.VISIBLE);
-        inputTextEdit.setVisibility(View.GONE);
-        inputTextView.setVisibility(View.VISIBLE);
+        loadingView.setVisibility(View.VISIBLE);
         Log.d(TAG, "Loading");
     }
 
@@ -247,12 +279,13 @@ public class TranslationFragment
 
     @Override
     public void showContent() {
+        errorCard.setVisibility(View.GONE);
+        textInputCard.setVisibility(View.GONE);
+        textViewCard.setVisibility(View.VISIBLE);
+        translationCard.setVisibility(View.VISIBLE);
+        yandexReference.setVisibility(View.VISIBLE);
         loadingView.setVisibility(View.GONE);
         languageFromLabel.setVisibility(View.VISIBLE);
-        clearButton.setVisibility(View.VISIBLE);
-        inputTextEdit.setVisibility(View.GONE);
-        inputTextView.setVisibility(View.VISIBLE);
-        translationCard.setVisibility(View.VISIBLE);
         realLanguageFromLabel.setVisibility(TextUtils.isEmpty(realLanguageFromLabel.getText())
                 ? View.GONE
                 : View.VISIBLE);
@@ -263,8 +296,12 @@ public class TranslationFragment
     @Override
     public void showError(@NonNull Throwable e) {
         TransitionManager.beginDelayedTransition((ViewGroup) getView());
-        loadingView.setVisibility(View.GONE);
-        //translationCard.setVisibility(View.INVISIBLE);
+        yandexReference.setVisibility(View.GONE);
+        translationCard.setVisibility(View.GONE);
+        textInputCard.setVisibility(View.GONE);
+        textViewCard.setVisibility(View.GONE);
+        errorCard.setVisibility(View.VISIBLE);
+        errorMessageView.setText(ErrorUtils.getErrorMessage(e));
         Log.d(TAG, String.format("Error: %s", e.getMessage()));
     }
 

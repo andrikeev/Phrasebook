@@ -1,9 +1,10 @@
 package ru.vandrikeev.android.phrasebook.model.translations;
 
 import android.support.annotation.NonNull;
-import ru.vandrikeev.android.phrasebook.model.languages.Language;
 
 import java.io.Serializable;
+
+import ru.vandrikeev.android.phrasebook.model.languages.Language;
 
 /**
  * Translation model.

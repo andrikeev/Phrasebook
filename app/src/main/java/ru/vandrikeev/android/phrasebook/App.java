@@ -13,6 +13,7 @@ import ru.vandrikeev.android.phrasebook.di.DaggerAppComponent;
 public final class App extends Application {
 
     @NonNull
+    @SuppressWarnings("NullableProblems")
     private AppComponent dependencyGraph;
 
     @Override

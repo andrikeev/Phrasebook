@@ -3,10 +3,11 @@ package ru.vandrikeev.android.phrasebook.presentation.view.history;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
-import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
-import ru.vandrikeev.android.phrasebook.presentation.view.LceView;
 
 import java.util.List;
+
+import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
+import ru.vandrikeev.android.phrasebook.presentation.view.LceView;
 
 /**
  * Interface for screen with list of translations.

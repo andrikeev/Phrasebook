@@ -31,4 +31,7 @@
     <string name="clear_history_message">Очистить историю?\nИзбранные также будут удалены</string>
     <string name="favorites_cleared">Избранные переводы удалены</string>
     <string name="history_cleared">Вся история очищена</string>
+    <string name="clipboard_translation_title">Перевод</string>
+    <string name="translation_copied_to_clipboard">Перевод скопирован в буфер обмена</string>
+    <string name="action_refresh">Обновить</string>
 </resources>

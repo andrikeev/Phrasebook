@@ -1,8 +1,10 @@
 package ru.vandrikeev.android.phrasebook.presentation.view.translation;
 
 import android.support.annotation.NonNull;
+
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
+
 import ru.vandrikeev.android.phrasebook.model.translations.Translation;
 import ru.vandrikeev.android.phrasebook.presentation.view.LceView;
 

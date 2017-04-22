@@ -12,7 +12,6 @@ import io.requery.Persistable;
 import io.requery.android.sqlite.DatabaseSource;
 import io.requery.reactivex.ReactiveEntityStore;
 import io.requery.reactivex.ReactiveSupport;
-import io.requery.sql.Configuration;
 import io.requery.sql.ConfigurationBuilder;
 import io.requery.sql.EntityDataStore;
 import ru.vandrikeev.android.phrasebook.model.translations.Models;
@@ -44,6 +43,11 @@ final public class AppModule {
         return application.getApplicationContext();
     }
 
+    /**
+     * Provides {@link ReactiveEntityStore} for accessing DB in a reactive way.
+     *
+     * @return Rx data store
+     */
     @Provides
     @Singleton
     @NonNull
@@ -53,12 +57,8 @@ final public class AppModule {
             protected void onConfigure(ConfigurationBuilder builder) {
                 super.onConfigure(builder);
                 builder.setQuoteColumnNames(true);
-                setLoggingEnabled(true);
-                setWriteAheadLoggingEnabled(true);
             }
         };
-        final Configuration configuration = source.getConfiguration();
-        final EntityDataStore<Persistable> dataStore = new EntityDataStore<>(configuration);
-        return ReactiveSupport.toReactiveStore(dataStore);
+        return ReactiveSupport.toReactiveStore(new EntityDataStore<Persistable>(source.getConfiguration()));
     }
 }

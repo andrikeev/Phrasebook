@@ -9,18 +9,24 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.transitionseverywhere.TransitionManager;
+
+import java.util.List;
+
 import ru.vandrikeev.android.phrasebook.R;
 import ru.vandrikeev.android.phrasebook.model.network.ErrorUtils;
 import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.history.TranslationListView;
 import ru.vandrikeev.android.phrasebook.ui.adapter.TranslationAdapter;
-
-import java.util.List;
 
 /**
  * Base fragment for list of translations.

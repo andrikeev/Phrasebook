@@ -3,7 +3,11 @@ package ru.vandrikeev.android.phrasebook.presentation.presenter.translation;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
+
 import com.arellomobile.mvp.InjectViewState;
+
+import javax.inject.Inject;
+
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
@@ -17,8 +21,6 @@ import ru.vandrikeev.android.phrasebook.model.translations.Translation;
 import ru.vandrikeev.android.phrasebook.model.translations.TranslationRepository;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.translation.TranslationView;
-
-import javax.inject.Inject;
 
 /**
  * Presenter for {@link TranslationView}.

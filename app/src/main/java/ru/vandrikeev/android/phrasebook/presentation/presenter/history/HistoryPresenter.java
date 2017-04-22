@@ -1,15 +1,18 @@
 package ru.vandrikeev.android.phrasebook.presentation.presenter.history;
 
 import android.support.annotation.NonNull;
+
 import com.arellomobile.mvp.InjectViewState;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
 import io.reactivex.functions.Consumer;
 import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.model.translations.TranslationRepository;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.RxPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.history.TranslationListView;
-
-import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Presenter for {@link TranslationListView} with recent translations.

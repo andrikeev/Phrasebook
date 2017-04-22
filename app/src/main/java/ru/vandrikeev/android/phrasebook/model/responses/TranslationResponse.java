@@ -1,6 +1,7 @@
 package ru.vandrikeev.android.phrasebook.model.responses;
 
 import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public final class TranslationResponse extends BaseApiResponse {
      */
     @NonNull
     @SerializedName("lang")
-    private String direction;
+    private String direction = "";
 
     private TranslationResponse() {
     }
