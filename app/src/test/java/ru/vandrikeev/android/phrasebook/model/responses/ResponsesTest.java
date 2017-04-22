@@ -1,54 +1,22 @@
 package ru.vandrikeev.android.phrasebook.model.responses;
 
-import android.support.annotation.NonNull;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.vandrikeev.android.phrasebook.AbstractTestWithResources;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings("Duplicates")
-public class ResponsesTest {
-
-    @NonNull
-    private Gson gson;
-
-    @NonNull
-    private Type supportedLanguagesType;
-
-    @NonNull
-    private Type translationResponseType;
-
-    private InputStreamReader readTestResource(String fileName) throws FileNotFoundException {
-        return new InputStreamReader(this.getClass().getResourceAsStream(fileName));
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        gson = new Gson();
-        supportedLanguagesType = new TypeToken<SupportedLanguages>() {
-        }.getType();
-        translationResponseType = new TypeToken<TranslationResponse>() {
-        }.getType();
-    }
+public class ResponsesTest extends AbstractTestWithResources {
 
     @Test
     public void test_deserializeSupportedLanguages_Ok() throws Exception {
-        final Object o1 = gson.fromJson(readTestResource("supported_langs_response_ok.json"), supportedLanguagesType);
+        final Object o1 = getSupportedLanguagesOk();
 
         assertTrue(o1 instanceof SupportedLanguages);
 
@@ -74,7 +42,7 @@ public class ResponsesTest {
 
     @Test
     public void test_deserializeSupportedLanguages_Error() throws Exception {
-        final Object o1 = gson.fromJson(readTestResource("supported_langs_response_error.json"), supportedLanguagesType);
+        final Object o1 = getSupportedLanguagesError();
 
         assertTrue(o1 instanceof SupportedLanguages);
 
@@ -86,7 +54,7 @@ public class ResponsesTest {
 
     @Test
     public void test_deserializeSupportedLanguages_Empty() throws Exception {
-        final Object o1 = gson.fromJson(readTestResource("supported_langs_response_empty.json"), supportedLanguagesType);
+        final Object o1 = getSupportedLanguagesEmpty();
 
         assertTrue(o1 instanceof SupportedLanguages);
 
@@ -98,7 +66,7 @@ public class ResponsesTest {
 
     @Test
     public void test_deserializeTranslationResponse_Ok() throws Exception {
-        final Object o1 = gson.fromJson(readTestResource("translation_response_ok.json"), translationResponseType);
+        final Object o1 = getTranslationOk();
 
         assertTrue(o1 instanceof TranslationResponse);
 
@@ -112,14 +80,14 @@ public class ResponsesTest {
 
     @Test
     public void test_deserializeTranslationResponse_Error() throws Exception {
-        final Object o1 = gson.fromJson(readTestResource("translation_response_error.json"), translationResponseType);
+        final Object o1 = getTranslationError();
 
         assertTrue(o1 instanceof TranslationResponse);
 
         final TranslationResponse translationResponse = (TranslationResponse) o1;
 
         assertEquals(502, translationResponse.getCode());
-        assertTrue(translationResponse.getText().isEmpty());
-        assertNull(translationResponse.getTranslationDirection());
+        assertEquals("", translationResponse.getText());
+        assertEquals("", translationResponse.getTranslationDirection());
     }
 }

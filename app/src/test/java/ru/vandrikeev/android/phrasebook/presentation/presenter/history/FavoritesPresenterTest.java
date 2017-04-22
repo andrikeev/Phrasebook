@@ -8,21 +8,22 @@ import org.mockito.Mockito;
 
 import ru.vandrikeev.android.phrasebook.AbstractTestWithServicesAndResources;
 import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
+import ru.vandrikeev.android.phrasebook.presentation.presenter.favorites.FavoritesPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.history.TranslationListView;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class HistoryPresenterTest extends AbstractTestWithServicesAndResources {
+public class FavoritesPresenterTest extends AbstractTestWithServicesAndResources {
 
     @NonNull
-    private HistoryPresenter presenter;
+    private FavoritesPresenter presenter;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
-        presenter = new HistoryPresenter(translationRepository);
+        presenter = new FavoritesPresenter(translationRepository);
     }
 
     @Test

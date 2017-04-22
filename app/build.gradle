@@ -71,6 +71,7 @@ ext {
     rx_android_version = '2.0.1'
     dagger_version = '2.9'
     moxy_version = '1.4.6'
+    requery_version = '1.3.0'
 }
 
 dependencies {
@@ -113,7 +114,7 @@ dependencies {
     // animation
     compile 'com.andkulikov:transitionseverywhere:1.6.9'
     // requery
-    compile 'io.requery:requery:1.2.1'
-    compile 'io.requery:requery-android:1.2.1'
-    apt 'io.requery:requery-processor:1.2.1'
+    compile "io.requery:requery:$requery_version"
+    compile "io.requery:requery-android:$requery_version"
+    apt "io.requery:requery-processor:$requery_version"
 }

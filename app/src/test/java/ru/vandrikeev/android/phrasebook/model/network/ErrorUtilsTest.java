@@ -2,6 +2,7 @@ package ru.vandrikeev.android.phrasebook.model.network;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import ru.vandrikeev.android.phrasebook.R;
 
 public class ErrorUtilsTest {
