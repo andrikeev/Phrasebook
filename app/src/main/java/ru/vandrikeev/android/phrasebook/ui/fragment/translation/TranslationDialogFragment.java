@@ -69,7 +69,7 @@ public class TranslationDialogFragment extends MvpAppCompatDialogFragment implem
     @NonNull
     private Language languageTo;
 
-    @Nullable
+    @NonNull
     private OnTranslateButtonClickedListener listener;
 
     @InjectPresenter
@@ -141,6 +141,19 @@ public class TranslationDialogFragment extends MvpAppCompatDialogFragment implem
                         onTranslationLoading();
                     }
                 });
+                inputTextEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
+                        switch (actionId) {
+                            case R.id.textInputAction:
+                            case EditorInfo.IME_NULL:
+                                onTranslationLoading();
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
                 if (TextUtils.isEmpty(s)) {
                     translationTextView.setText("...");
                     actionButton.setEnabled(false);
@@ -202,17 +215,13 @@ public class TranslationDialogFragment extends MvpAppCompatDialogFragment implem
     }
 
     private void onTranslationLoading() {
-        if (listener != null) {
-            listener.onTranslationLoading(inputTextEdit.getText().toString());
-        }
+        listener.onTranslationLoading(inputTextEdit.getText().toString());
         getDialog().dismiss();
         Log.d(TAG, "Translate button clicked");
     }
 
     private void onTranslationLoaded(@NonNull Translation translation) {
-        if (listener != null) {
-            listener.onTranslationLoaded(translation);
-        }
+        listener.onTranslationLoaded(translation);
         getDialog().dismiss();
         Log.d(TAG, "Translate button clicked");
     }

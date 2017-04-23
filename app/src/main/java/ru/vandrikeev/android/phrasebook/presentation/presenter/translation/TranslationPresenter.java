@@ -151,12 +151,14 @@ public class TranslationPresenter extends RxPresenter<TranslationView> {
      */
     public void setFavorite(final boolean favorite) {
         if (lastTranslation != null) {
+            getViewState().enableFavorite(false);
             disposable = translationRepository.setFavorite(lastTranslation, favorite)
                     .subscribe(
                             new Consumer<HistoryTranslation>() {
                                 @Override
                                 public void accept(@NonNull HistoryTranslation translation) throws Exception {
                                     getViewState().setFavorite(translation.isFavorite());
+                                    getViewState().enableFavorite(true);
                                 }
                             },
                             new Consumer<Throwable>() {

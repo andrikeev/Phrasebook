@@ -29,7 +29,6 @@ import ru.vandrikeev.android.phrasebook.BuildConfig;
 import ru.vandrikeev.android.phrasebook.R;
 import ru.vandrikeev.android.phrasebook.di.AppComponent;
 import ru.vandrikeev.android.phrasebook.model.languages.Language;
-import ru.vandrikeev.android.phrasebook.model.network.ErrorUtils;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.translation.LanguageSelectionPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.translation.LanguageSelectionView;
 import ru.vandrikeev.android.phrasebook.ui.adapter.LanguageAdapter;
@@ -159,8 +158,8 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
                 final Language to = getLanguageTo();
                 final int newFromPosition = languageFromAdapter.getItemPosition(to);
                 final int newToPosition = languageToAdapter.getItemPosition(from);
-                languageFromSpinner.setSelection(newFromPosition > 0 ? newFromPosition : 0);
                 languageToSpinner.setSelection(newToPosition > 0 ? newToPosition : 0);
+                languageFromSpinner.setSelection(newFromPosition > 0 ? newFromPosition : 0);
             }
         });
     }
@@ -224,6 +223,9 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
         final int oldLanguageIndex = model.indexOf(oldLanguage);
         languageToAdapter.addAll(model);
         languageToSpinner.setSelection(oldLanguageIndex > 0 ? oldLanguageIndex : 0);
+        if (onLanguageSelectedListener != null) {
+            onLanguageSelectedListener.onSelected();
+        }
         Log.d(TAG, String.format("Languages loaded! %s\nOld selected language: %s\nNew language: %s", model,
                 oldLanguage, languageToSpinner.getSelectedItem()));
     }
@@ -237,12 +239,12 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
 
     @Override
     public void showError(@NonNull Throwable e) {
-        languageToSpinner.setEnabled(false);
+        languageToSpinner.setEnabled(true);
         swapLanguagesButton.setEnabled(!getLanguageFrom().isAutodetect());
-        final String message = BuildConfig.DEBUG
-                ? String.format("Error: %s; %s", e.getMessage(), e.toString())
-                : getContext().getString(ErrorUtils.getErrorMessage(e));
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        if (BuildConfig.DEBUG) {
+            final String message = String.format("Error: %s; %s", e.getMessage(), e.toString());
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
         Log.e(TAG, "Error while loading languages", e);
     }
 

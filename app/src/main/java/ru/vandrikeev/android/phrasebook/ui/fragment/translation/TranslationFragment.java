@@ -6,10 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -19,7 +17,6 @@ import android.widget.Toast;
 
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
-import com.transitionseverywhere.TransitionManager;
 
 import ru.vandrikeev.android.phrasebook.App;
 import ru.vandrikeev.android.phrasebook.R;
@@ -82,9 +79,6 @@ public class TranslationFragment
 
     @NonNull
     private TextView errorMessageView;
-
-    @NonNull
-    private Button reloadButton;
 
     @NonNull
     private ImageButton favoriteButton;
@@ -206,11 +200,11 @@ public class TranslationFragment
         // region Error card
         errorCard = (CardView) view.findViewById(R.id.errorCard);
         errorMessageView = (TextView) view.findViewById(R.id.errorMessageView);
-        reloadButton = (Button) view.findViewById(R.id.reloadButton);
+        Button reloadButton = (Button) view.findViewById(R.id.reloadButton);
         reloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                presenter.translate();
+                presenter.clearView();
             }
         });
         // endregion
@@ -224,7 +218,6 @@ public class TranslationFragment
 
     @Override
     public void clearView() {
-        TransitionManager.beginDelayedTransition((ViewGroup) getView());
         yandexReference.setVisibility(View.GONE);
         errorCard.setVisibility(View.GONE);
         translationCard.setVisibility(View.GONE);
@@ -235,7 +228,6 @@ public class TranslationFragment
 
     @Override
     public void showLoading() {
-        TransitionManager.beginDelayedTransition((ViewGroup) getView());
         yandexReference.setVisibility(View.GONE);
         errorCard.setVisibility(View.GONE);
         translationCard.setVisibility(View.GONE);
@@ -255,9 +247,13 @@ public class TranslationFragment
     public void setModel(@NonNull Translation translation) {
         languageFromLabel.setText(translation.getLanguageFrom().getName());
         inputTextView.setText(translation.getText());
-        realLanguageFromLabel.setText(!translation.getLanguageFrom().equals(translation.getRealLanguageFrom())
-                ? getString(R.string.translation_from_label, translation.getRealLanguageFrom().getName())
-                : "");
+        if (!translation.getLanguageFrom().equals(translation.getRealLanguageFrom())) {
+            realLanguageFromLabel.setText(getString(R.string.translation_from_label, translation.getRealLanguageFrom().getName()));
+            realLanguageFromLabel.setVisibility(View.VISIBLE);
+        } else {
+            realLanguageFromLabel.setText("");
+            realLanguageFromLabel.setVisibility(View.GONE);
+        }
         languageToLabel.setText(languageSelectionWidget.getLanguageTo().getName());
         translationTextView.setText(translation.getTranslation());
         languageSelectionWidget.setOnLanguageSelectedListener(
@@ -270,10 +266,11 @@ public class TranslationFragment
                                 languageSelectionWidget.getLanguageTo());
                     }
                 });
-        Log.d(TAG, String.format("Translated: Translation {'%s' - '%s'; %s-%s}",
+        Log.d(TAG, String.format("Translated: Translation {'%s' - '%s'; %s(%s)-%s}",
                 translation.getText(),
                 translation.getTranslation(),
                 translation.getLanguageFrom().getCode(),
+                translation.getRealLanguageFrom().getCode(),
                 translation.getLanguageTo().getCode()));
     }
 
@@ -284,18 +281,14 @@ public class TranslationFragment
         textViewCard.setVisibility(View.VISIBLE);
         translationCard.setVisibility(View.VISIBLE);
         yandexReference.setVisibility(View.VISIBLE);
-        loadingView.setVisibility(View.GONE);
         languageFromLabel.setVisibility(View.VISIBLE);
-        realLanguageFromLabel.setVisibility(TextUtils.isEmpty(realLanguageFromLabel.getText())
-                ? View.GONE
-                : View.VISIBLE);
+        loadingView.setVisibility(View.GONE);
         yandexReference.setVisibility(View.VISIBLE);
         Log.d(TAG, "Show content");
     }
 
     @Override
     public void showError(@NonNull Throwable e) {
-        TransitionManager.beginDelayedTransition((ViewGroup) getView());
         yandexReference.setVisibility(View.GONE);
         translationCard.setVisibility(View.GONE);
         textInputCard.setVisibility(View.GONE);
@@ -307,14 +300,12 @@ public class TranslationFragment
 
     @Override
     public void enableFavorite(boolean enabled) {
-        TransitionManager.beginDelayedTransition((ViewGroup) getView());
         favoriteButton.setEnabled(enabled);
         Log.d(TAG, String.format("Favorite button enabled state '%s'", enabled));
     }
 
     @Override
     public void setFavorite(boolean favorite) {
-        TransitionManager.beginDelayedTransition((ViewGroup) getView());
         favoriteButton.setImageResource(favorite ? R.drawable.ic_favorite_on : R.drawable.ic_favorite_off);
         isFavorite = favorite;
         Log.d(TAG, String.format("Translation favorite state '%s'", favorite));
