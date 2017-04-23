@@ -69,9 +69,14 @@ public class HistoryFragment extends TranslationListFragment {
                 new TranslationAdapter.OnClickFavoriteListener() {
                     @Override
                     public void onClick(@NonNull HistoryTranslation translation) {
-//
+presenter.setFavorite(translation, !translation.isFavorite());
                     }
                 });
         contentView.setAdapter(adapter);
+    }
+
+    @Override
+    public void updateTranslation(@NonNull HistoryTranslation translation) {
+        adapter.update(translation);
     }
 }

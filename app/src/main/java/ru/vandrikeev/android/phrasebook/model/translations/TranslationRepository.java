@@ -122,6 +122,21 @@ public class TranslationRepository {
     }
 
     /**
+     * Saves translation to DB with given favorite status. Uses {@link ReactiveEntityStore#upsert} to save or update
+     * entity. Nonblocking.
+     *
+     * @param translation translation to be saved
+     * @return {@link Single} with saved entity observable on Android main thread
+     */
+    public Single<? extends HistoryTranslation> setFavorite(@NonNull HistoryTranslation translation, boolean favorite) {
+        final HistoryTranslationEntity historyTranslation = new HistoryTranslationEntity(translation);
+        historyTranslation.setFavorite(favorite);
+        return dataStore.upsert(historyTranslation)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
      * Asynchronously loads all favorite translations ordered by timestamp descending. Nonblocking.
      *
      * @return {@link Single} with list of favorite translation observable on Android main thread

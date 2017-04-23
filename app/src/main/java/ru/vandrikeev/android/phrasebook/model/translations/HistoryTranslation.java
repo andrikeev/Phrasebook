@@ -50,6 +50,14 @@ public class HistoryTranslation {
         this.timestamp = new Date().getTime();
     }
 
+    public HistoryTranslation(@NonNull HistoryTranslation translation) {
+        this.text = translation.getText();
+        this.translation = translation.getTranslation();
+        this.languageFromCode = translation.getLanguageFrom();
+        this.languageToCode = translation.getLanguageTo();
+        this.timestamp = new Date().getTime();
+    }
+
     @NonNull
     public String getText() {
         return text;

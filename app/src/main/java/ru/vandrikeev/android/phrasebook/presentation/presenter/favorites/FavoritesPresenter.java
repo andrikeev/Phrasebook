@@ -7,7 +7,6 @@ import com.arellomobile.mvp.InjectViewState;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import io.reactivex.functions.Consumer;
 import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
@@ -18,7 +17,6 @@ import ru.vandrikeev.android.phrasebook.presentation.view.history.TranslationLis
 /**
  * Presenter for {@link TranslationListView} with favorite translations.
  */
-@Singleton
 @InjectViewState
 public class FavoritesPresenter extends RxPresenter<TranslationListView> {
 
@@ -70,6 +68,24 @@ public class FavoritesPresenter extends RxPresenter<TranslationListView> {
                         getViewState().showEmpty();
                     }
                 });
+    }
+
+    public void setFavorite(@NonNull HistoryTranslation translation, final boolean favorite) {
+        disposable = repository.setFavorite(translation, favorite)
+                .subscribe(
+                        new Consumer<HistoryTranslation>() {
+                            @Override
+                            public void accept(@NonNull HistoryTranslation translation) throws Exception {
+                                getViewState().updateTranslation(translation);
+                            }
+                        },
+                        new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable e) throws Exception {
+                                getViewState().showError(e);
+                            }
+                        }
+                );
     }
 
     @Override

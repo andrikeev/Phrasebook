@@ -1,5 +1,7 @@
 package ru.vandrikeev.android.phrasebook.presentation.view.history;
 
+import android.support.annotation.NonNull;
+
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
@@ -30,4 +32,10 @@ public interface TranslationListView extends LceView<List<? extends HistoryTrans
      */
     @StateStrategyType(SkipStrategy.class)
     void scrollToTop();
+
+    /**
+     * Update translation item.
+     */
+    @StateStrategyType(SkipStrategy.class)
+    void updateTranslation(@NonNull HistoryTranslation translation);
 }

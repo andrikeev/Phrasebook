@@ -158,8 +158,8 @@ public class LanguageSelectionWidget extends FrameLayout implements LanguageSele
                 final Language to = getLanguageTo();
                 final int newFromPosition = languageFromAdapter.getItemPosition(to);
                 final int newToPosition = languageToAdapter.getItemPosition(from);
-                languageToSpinner.setSelection(newToPosition > 0 ? newToPosition : 0);
-                languageFromSpinner.setSelection(newFromPosition > 0 ? newFromPosition : 0);
+                languageToSpinner.setSelection(newToPosition);
+                languageFromSpinner.setSelection(newFromPosition);
             }
         });
     }
