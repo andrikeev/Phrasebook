@@ -79,5 +79,8 @@ public class FavoritesFragment extends TranslationListFragment {
     @Override
     public void updateTranslation(@NonNull HistoryTranslation translation) {
         adapter.remove(translation);
+        if (adapter.getItemCount() == 0) {
+            showEmpty();
+        }
     }
 }
