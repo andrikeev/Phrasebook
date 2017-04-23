@@ -72,7 +72,7 @@ public class Language implements Serializable {
 
         final Language that = (Language) o;
 
-        return this.code.equals(that.code) && this.name.equals(that.name);
+        return this.code.equals(that.code);
     }
 
     @Override

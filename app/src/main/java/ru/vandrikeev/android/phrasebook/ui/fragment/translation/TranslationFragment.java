@@ -20,7 +20,9 @@ import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import ru.vandrikeev.android.phrasebook.App;
 import ru.vandrikeev.android.phrasebook.R;
+import ru.vandrikeev.android.phrasebook.model.languages.Language;
 import ru.vandrikeev.android.phrasebook.model.network.ErrorUtils;
+import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.model.translations.Translation;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.translation.TranslationPresenter;
 import ru.vandrikeev.android.phrasebook.presentation.view.translation.TranslationView;
@@ -28,7 +30,6 @@ import ru.vandrikeev.android.phrasebook.ui.fragment.BaseFragment;
 import ru.vandrikeev.android.phrasebook.ui.view.LanguageSelectionWidget;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
-import static ru.vandrikeev.android.phrasebook.R.id.translation;
 
 /**
  * Fragment for translation tab.
@@ -37,7 +38,17 @@ import static ru.vandrikeev.android.phrasebook.R.id.translation;
 public class TranslationFragment
         extends BaseFragment<TranslationView, TranslationPresenter> implements TranslationView {
 
+    // region constants
+
     private static final String TAG = TranslationFragment.class.getSimpleName();
+    private static final String LANGUAGE_FROM_KEY =
+            "ru.vandrikeev.android.phrasebook.ui.fragment.translation.TranslationFragment.LANGUAGE_FROM_KEY";
+    private static final String LANGUAGE_TO_KEY =
+            "ru.vandrikeev.android.phrasebook.ui.fragment.translation.TranslationFragment.LANGUAGE_TO_KEY";
+    private static final String TEXT_KEY =
+            "ru.vandrikeev.android.phrasebook.ui.fragment.translation.TranslationFragment.TEXT_KEY";
+    private static final String TRANSLATION_KEY =
+            "ru.vandrikeev.android.phrasebook.ui.fragment.translation.TranslationFragment.TRANSLATION_KEY";
 
     // region Fields
 
@@ -175,7 +186,7 @@ public class TranslationFragment
         translationCard = (CardView) view.findViewById(R.id.translationCard);
         realLanguageFromLabel = (TextView) view.findViewById(R.id.realLanguageFromLabel);
         languageToLabel = (TextView) view.findViewById(R.id.languageToLabel);
-        translationTextView = (TextView) view.findViewById(translation);
+        translationTextView = (TextView) view.findViewById(R.id.translation);
         favoriteButton = (ImageButton) view.findViewById(R.id.favoriteButton);
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,6 +223,23 @@ public class TranslationFragment
         yandexReference = (TextView) view.findViewById(R.id.yandexReference);
 
         Log.d(TAG, "Fragment created");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        final Bundle args = getArguments();
+        if (args != null && !args.isEmpty()) {
+            if (args.containsKey(TEXT_KEY) &&
+                    args.containsKey(LANGUAGE_FROM_KEY) &&
+                    args.containsKey(LANGUAGE_TO_KEY)) {
+                final Language languageFrom = new Language(args.getString(LANGUAGE_FROM_KEY), "");
+                final Language languageTo = new Language(args.getString(LANGUAGE_TO_KEY), "");
+                presenter.translate(args.getString(TEXT_KEY), languageFrom, languageTo);
+                languageSelectionWidget.setLanguageFrom(languageFrom);
+                languageSelectionWidget.setLanguageTo(languageTo);
+            }
+        }
     }
 
     // region TranslationView
@@ -312,4 +340,15 @@ public class TranslationFragment
     }
 
     // endregion
+
+    public static TranslationFragment create(@NonNull HistoryTranslation translation) {
+        final TranslationFragment fragment = new TranslationFragment();
+        final Bundle args = new Bundle();
+        args.putString(LANGUAGE_FROM_KEY, translation.getLanguageFrom());
+        args.putString(LANGUAGE_TO_KEY, translation.getLanguageTo());
+        args.putString(TEXT_KEY, translation.getText());
+        args.putString(TRANSLATION_KEY, translation.getTranslation());
+        fragment.setArguments(args);
+        return fragment;
+    }
 }

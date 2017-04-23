@@ -12,6 +12,7 @@ import ru.vandrikeev.android.phrasebook.App;
 import ru.vandrikeev.android.phrasebook.R;
 import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.presentation.presenter.history.HistoryPresenter;
+import ru.vandrikeev.android.phrasebook.ui.activity.MainActivity;
 import ru.vandrikeev.android.phrasebook.ui.adapter.TranslationAdapter;
 import ru.vandrikeev.android.phrasebook.ui.fragment.TranslationListFragment;
 
@@ -62,7 +63,7 @@ public class HistoryFragment extends TranslationListFragment {
                 new TranslationAdapter.OnClickTranslationListener() {
                     @Override
                     public void onClick(@NonNull HistoryTranslation translation) {
-//                        ((MainActivity) getActivity()).openTranslation(new Translation(translation));
+                        ((MainActivity) getActivity()).openTranslation(translation);
                     }
                 },
                 new TranslationAdapter.OnClickFavoriteListener() {

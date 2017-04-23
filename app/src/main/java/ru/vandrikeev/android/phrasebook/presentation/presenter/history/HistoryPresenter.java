@@ -7,6 +7,7 @@ import com.arellomobile.mvp.InjectViewState;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.functions.Consumer;
 import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
@@ -17,6 +18,7 @@ import ru.vandrikeev.android.phrasebook.presentation.view.history.TranslationLis
 /**
  * Presenter for {@link TranslationListView} with recent translations.
  */
+@Singleton
 @InjectViewState
 public class HistoryPresenter extends RxPresenter<TranslationListView> {
 

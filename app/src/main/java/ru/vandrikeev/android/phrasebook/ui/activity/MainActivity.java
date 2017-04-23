@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import ru.vandrikeev.android.phrasebook.R;
+import ru.vandrikeev.android.phrasebook.model.translations.HistoryTranslation;
 import ru.vandrikeev.android.phrasebook.ui.fragment.favorites.FavoritesFragment;
 import ru.vandrikeev.android.phrasebook.ui.fragment.history.HistoryFragment;
 import ru.vandrikeev.android.phrasebook.ui.fragment.translation.TranslationFragment;
@@ -37,6 +38,9 @@ import ru.vandrikeev.android.phrasebook.ui.fragment.translation.TranslationFragm
  * scroll to the top of list.
  */
 public class MainActivity extends AppCompatActivity {
+
+    @NonNull
+    private BottomNavigationView navigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -81,12 +85,21 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
+    public void openTranslation(@NonNull HistoryTranslation translation) {
+        navigation.setOnNavigationItemSelectedListener(null);
+        navigation.setSelectedItemId(R.id.navigation_translation);
+        navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content, TranslationFragment.create(translation))
+                .commit();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
 
         if (savedInstanceState == null) {
